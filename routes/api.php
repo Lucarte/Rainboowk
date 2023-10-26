@@ -33,7 +33,7 @@ Route::get('/', [HomeController::class, 'getAll']);
 
 
 // Infos about the project will be displayed here
-// Route::get('/about', [AboutController::class, 'index']);;
+Route::get('/about', [AboutController::class, 'index']);;
 
 
 // All routes that deal with registration or login, or that need authetification will have the prefix 'auth'
@@ -42,25 +42,25 @@ Route::prefix('auth')->group(function () {
     Route::get('/register', [RegisterController::class, 'index']);
     Route::get('/login', [LoginController::class, 'index']);
     Route::post('/register', RegisterController::class);
-    // Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store']);
 
-    // // Routes needing authentication
-    // Route::controller()->middleware('auth:sanctum')->group(function () {
-    //     // Route::post('/logout', [LogoutController::class, 'index']);
+    // Routes needing authentication
+    Route::controller()->middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', LogoutController::class);
 
-    //     // Route::controller(BookController::class)->group(function () {
-    //     //     Route::post('/{book_lan}/store', 'store')->where('book_lan', 'books|buecher|libros|livres');;
-    //     //     Route::patch('/{book_lan}/update/{id}', 'update')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
-    //     //     Route::delete('/{book_lan}/delete/{id}', 'delete')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
-    //     // });
+        // Route::controller(BookController::class)->group(function () {
+        //     Route::post('/{book_lan}/store', 'store')->where('book_lan', 'books|buecher|libros|livres');;
+        //     Route::patch('/{book_lan}/update/{id}', 'update')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
+        //     Route::delete('/{book_lan}/delete/{id}', 'delete')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
+        // });
 
-    //     // // User possibilities: retrieve or update their info., or delete their profile
-    //     // Route::controller(UserController::class)->group(function () {
-    //     //     Route::get('/user/{Username}', 'getByUsername')->whereAlpha('Username');
-    //     //     Route::patch('/user/{Username}', 'update')->whereAlpha('Username');
-    //     //     Route::delete('/user/{Username}', 'delete')->whereAlpha('Username');
-    //     // });
-    // });
+        // User possibilities: retrieve or update their info., or delete their profile
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/user/{username}', 'getByUsername')->whereAlpha('username');
+            // Route::patch('/user/{Username}', 'update')->whereAlpha('Username');
+            // Route::delete('/user/{Username}', 'delete')->whereAlpha('Username');
+        });
+    });
 });
 
 // 404

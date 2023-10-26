@@ -24,6 +24,7 @@ class User extends Authenticatable
         'locality',
         'person_role',
         'publicity',
+        'password',
         'terms'
     ];
 

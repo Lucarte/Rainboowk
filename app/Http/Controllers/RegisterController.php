@@ -33,35 +33,36 @@ class RegisterController extends Controller
                 Password::min(8)->letters()->numbers()->mixedCase()->symbols()
             ],
             'password_confirmation' => ['required', 'min:8'],
-            // 'locality' => ['required'],
-            // 'personRole' => ['required'],
-            // 'publicity' => ['required'],
-            // 'terms' => ['required'],
+            'locality' => ['required'],
+            'personRole' => ['required'],
+            'publicity' => ['required'],
+            'terms' => ['required'],
         ]);
 
 
         $user = User::create([
-            // 'salutation' => $request->get('salutation'),
+            'salutation' => $request->get('salutation'),
             'username' => $request->get('username'),
             'email' => $request->get('email'),
             'dob' => $request->get('dob'),
             'password' => Hash::make($request->get('password')),
-            // 'locality' => $request->get('locality'),
-            // 'personRole' => $request->get('personRole'),
-            // 'publicity' => $request->get('publicity'),
-            // 'terms' => $request->get('terms'),
+            'locality' => $request->get('locality'),
+            'personRole' => $request->get('personRole'),
+            'publicity' => $request->get('publicity'),
+            'terms' => $request->get('terms'),
         ]);
 
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        return response()->json(status: 201);
+        $username = $user->username;
+        return response()->json(['message' => "Registration successful! You can now login, $username!"], Response::HTTP_CREATED);
     }
 
     public function index()
     {
         // TODO: angeforderten Datensatz zurückgeben
-        return response()->json(['message' => 'INDEX works from the Register Controller!'], Response::HTTP_OK);
+        return response()->json(['message' => 'Go ahead and register!'], Response::HTTP_OK);
     }
 }

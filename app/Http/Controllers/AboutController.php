@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 class AboutController extends Controller
 {
 
-    public function index(Request $request, string $book_lan)
+    public function index()
     {
         return response()->json(['message' => 'show from AboutController WORKS!'], Response::HTTP_OK);
     }

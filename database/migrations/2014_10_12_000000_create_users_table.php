@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('locality', ['within_Germany', 'beyond_Germany']);
             $table->enum('personRole', ['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person'])->index();
             $table->enum('publicity', ['mouthword', 'online_search', 'other']);
+            $table->string('password');
             $table->boolean('terms')->default(0);
             $table->rememberToken();
             $table->timestamps();

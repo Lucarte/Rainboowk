@@ -9,10 +9,10 @@ class LogoutController extends Controller
 {
     public function __invoke(Request $request)
     {
-        Auth::logout();
+        // Auth::logout();
 
         // try this if does not work
-        // Auth::guard('web')->logout();
+        Auth::guard('web')->logout();
 
         return response()->json(['message' => 'You have been logged out successfully!']);
     }
