@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('salutation', ['dear_individual', 'dear_person', 'dear_child', 'Mrs.', 'Mr.']);
             $table->string('username', 16);
             $table->string('email')->unique();
-            $table->date('dob');
+            $table->date('dob')->comment('date of birth');
             $table->timestamp('email_verified_at')->nullable()->default(null);
             $table->enum('locality', ['within_Germany', 'beyond_Germany']);
             $table->enum('personRole', ['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person'])->index();

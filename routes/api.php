@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'getAll']);
 
 // Get a specific book or a list of books depending on language
-// Route::get('/{book_lan}', [BookController::class, 'list'])->where('book_lan', 'books|buecher|libros|livres');
-// Route::get('/{book_lan}/{id}', [BookController::class, 'show'])->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
+Route::get('/{book_lan}', [BookController::class, 'list'])->where('book_lan', 'books|buecher|libros|livres');
+Route::get('/{book_lan}/{id}', [BookController::class, 'getById'])->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
 
 
 // Infos about the project will be displayed here
@@ -42,23 +42,28 @@ Route::prefix('auth')->group(function () {
     Route::get('/register', [RegisterController::class, 'index']);
     Route::get('/login', [LoginController::class, 'index']);
     Route::post('/register', RegisterController::class);
-    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'create']);
 
     // Routes needing authentication
     Route::controller()->middleware('auth:sanctum')->group(function () {
         Route::post('/logout', LogoutController::class);
 
-        // Route::controller(BookController::class)->group(function () {
-        //     Route::post('/{book_lan}/store', 'store')->where('book_lan', 'books|buecher|libros|livres');;
-        //     Route::patch('/{book_lan}/update/{id}', 'update')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
-        //     Route::delete('/{book_lan}/delete/{id}', 'delete')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
-        // });
+        Route::controller(BookController::class)->group(function () {
+            Route::post('/{book_lan}/create', 'create')->where('book_lan', 'books|buecher|libros|livres');;
+            Route::patch('/{book_lan}/update/{id}', 'update')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
+            Route::delete('/{book_lan}/delete/{id}', 'delete')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
+        });
 
         // User possibilities: retrieve or update their info., or delete their profile
         Route::controller(UserController::class)->group(function () {
-            Route::get('/user/{username}', 'getByUsername')->whereAlpha('username');
-            // Route::patch('/user/{Username}', 'update')->whereAlpha('Username');
-            // Route::delete('/user/{Username}', 'delete')->whereAlpha('Username');
+            // Need a route where 'admin' can see all users and if need be delete them
+            Route::get('/users', 'users');
+            Route::delete('/users', 'delete');
+
+            // Routes for all other users not 'admin'
+            Route::get('/user/{username}', 'getByUsername')->whereAlphaNumeric('username');
+            Route::patch('/user/{username}', 'update')->whereAlphaNumeric('username');
+            Route::delete('/user/{username}', 'delete')->whereAlphaNumeric('username');
         });
     });
 });

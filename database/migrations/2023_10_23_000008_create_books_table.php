@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('ISBN')->unique();
             $table->string('title');
             $table->text('description');
@@ -23,6 +24,11 @@ return new class extends Migration
 
             // Foreign key constraints with ON UPDATE CASCADE and ON DELETE CASCADE
 
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->foreign('author_id')
                 ->references('id')

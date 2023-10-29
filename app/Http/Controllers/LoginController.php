@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
-    public function store(Request $request)
+    public function create(Request $request)
     {
         // validate input
         $validator = Validator::make($request->all(), [
@@ -25,14 +25,11 @@ class LoginController extends Controller
                 'errors' => $validator->errors(),
             ]);
         }
-        // dd($request->all()); // ich bekomme was ich angegeben habe
 
-        // FUNKTIONIERT NICHT
         $credentials = [
             'email' => $request->input('email'),
             'password' => $request->input('password'),
         ];
-
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
@@ -49,5 +46,11 @@ class LoginController extends Controller
     {
         // TODO: angeforderten Datensatz zurückgeben
         return response()->json(['message' => 'INDEX works from the Login Controller!'], Response::HTTP_OK);
+    }
+
+    // Update this logic to make it secure
+    public static function isAdmin(User $user)
+    {
+        return strtoupper($user->name) === strtoupper('admin');
     }
 }
