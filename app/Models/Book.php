@@ -18,23 +18,28 @@ class Book extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function author()
+    public function authors()
     {
-        return $this->hasMany(Author::class, 'book_id', 'id');
+        return $this->belongsToMany(Author::class, 'book_author', 'book_id', 'author_id');
     }
 
-    public function illustrator()
+    public function illustrators()
     {
-        return $this->hasMany(Illustrator::class, 'book_id', 'id');
+        return $this->belongsToMany(Illustrator::class, 'book_illustrator', 'book_id', 'illustrator_id');
     }
 
     public function publisher()
     {
-        return $this->hasMany(Publisher::class, 'book_id', 'id');
+        return $this->belongsTo(Publisher::class, 'book_id', 'id');
     }
 
-    public function genre()
+    public function genres()
     {
-        return $this->hasMany(Genre::class, 'book_id', 'id');
+        return $this->belongsToMany(Genre::class, 'book_genre', 'book_id', 'genre_id');
+    }
+
+    public function getPrintDate(): string
+    {
+        return date('F, Y', $this->printDate);
     }
 }

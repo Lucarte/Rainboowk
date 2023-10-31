@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('illustrators', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->index();
             $table->string('first_name');
             $table->string('last_name');
             $table->date('date_of_birth')->nullable();
@@ -25,6 +26,12 @@ return new class extends Migration
             $table->text('awards_and_honors')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 

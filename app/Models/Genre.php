@@ -7,5 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Genre extends Model
 {
-    use HasFactory;
+    public function books()
+    {
+        return $this->belongsToMany(Book::class, 'book_genre', 'genre_id', 'book_id');
+    }
 }

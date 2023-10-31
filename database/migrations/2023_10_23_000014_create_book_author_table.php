@@ -8,22 +8,22 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('covers', function (Blueprint $table) {
+        Schema::create('book_author', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedBigInteger('book_id')->index();
-            $table->string('image_path');
+            $table->unsignedBigInteger('book_id');
+            $table->unsignedBigInteger('author_id');
             $table->timestamps();
 
+            // Define foreign key constraint
             $table->foreign('book_id')
                 ->references('id')
                 ->on('books')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreign('user_id')
+            $table->foreign('author_id')
                 ->references('id')
-                ->on('users')
+                ->on('authors')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
@@ -31,6 +31,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('covers');
+        Schema::dropIfExists('book_author');
     }
 };

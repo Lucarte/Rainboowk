@@ -27,9 +27,18 @@ use Illuminate\Support\Facades\Route;
 // Show HOME (a list of the main-all-comprehensive catalog in all languages)
 Route::get('/', [HomeController::class, 'getAll']);
 
-// Get a specific book or a list of books depending on language
+// Get a specific book or a list of books depending on original language
 Route::get('/{book_lan}', [BookController::class, 'list'])->where('book_lan', 'books|buecher|libros|livres');
 Route::get('/{book_lan}/{id}', [BookController::class, 'getById'])->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
+
+// // Get a specific author's info. + list of books written by them
+// Route::get('/author/{slug}', [AuthorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
+
+// // Get a specific illustrator's info. + list of books illustrated by them
+// Route::get('/illustrator/{slug}', [IllustratorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
+
+// // Get a specific publisher's info. + list of books published by them
+// Route::get('/publisher/{slug}', [PublisherController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
 
 
 // Infos about the project will be displayed here
@@ -53,6 +62,24 @@ Route::prefix('auth')->group(function () {
             Route::patch('/{book_lan}/update/{id}', 'update')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
             Route::delete('/{book_lan}/delete/{id}', 'delete')->where('book_lan', 'books|buecher|libros|livres')->whereNumber('id');
         });
+
+        Route::controller(AuthorController::class)->group(function () {
+            Route::post('/createAuthor', 'createAuthor');
+            // Route::patch('/updateAuthor/{slug}', 'updateAuthor')->where('slug', '[A-Za-z_]+');
+            Route::delete('/deleteAuthor/{slug}', 'deleteAuthor')->where('slug', '[A-Za-z_]+');
+        });
+
+        // Route::controller(IllustratorController::class)->group(function () {
+        //     Route::post('/createIllustrator', 'create');
+        //     Route::patch('/updateIllustrator/{slug}', 'update')->where('slug', '[A-Za-z_]+');
+        //     Route::delete('/deleteIllustrator/{slug}', 'delete')->where('slug', '[A-Za-z_]+');
+        // });
+
+        // Route::controller(PublisherController::class)->group(function () {
+        //     Route::post('/createPublisher', 'create');
+        //     Route::patch('/updatePublisher/{slug}', 'update')->where('slug', '[A-Za-z_]+');
+        //     Route::delete('/deletePublisher/{slug}', 'delete')->where('slug', '[A-Za-z_]+');
+        // });
 
         // User possibilities: retrieve or update their info., or delete their profile
         Route::controller(UserController::class)->group(function () {

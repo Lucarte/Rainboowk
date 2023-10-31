@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('illustrator_id')->index();
             $table->date('print_date');
             $table->unsignedBigInteger('publisher_id')->index();
-            $table->unsignedBigInteger('genre_id')->index();
             $table->string('original_language')->index();
             $table->timestamps();
 

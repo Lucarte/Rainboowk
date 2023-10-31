@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\Response;
 
 class BookPolicy
 {
-    // true null vs. true false 
+    // true null vs. true false // change this to a real check od admin 'role'
     public function before(User $user)
     {
         return LoginController::isAdmin($user) ? true : null;

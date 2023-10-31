@@ -1,7 +1,5 @@
 <?php
 
-// This is my pivot table portraying a n:n relationship between books <-> genres
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,10 +8,10 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('book_genre', function (Blueprint $table) {
+        Schema::create('book_illustrator', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('book_id');
-            $table->unsignedBigInteger('genre_id');
+            $table->unsignedBigInteger('illustrator_id');
             $table->timestamps();
 
             // Define foreign key constraint
@@ -23,9 +21,9 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreign('genre_id')
+            $table->foreign('illustrator_id')
                 ->references('id')
-                ->on('genres')
+                ->on('illustrators')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
@@ -33,6 +31,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('book_genre');
+        Schema::dropIfExists('book_illustrator');
     }
 };

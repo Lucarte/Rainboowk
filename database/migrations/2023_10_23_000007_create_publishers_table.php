@@ -13,12 +13,19 @@ return new class extends Migration
     {
         Schema::create('publishers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->index();
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('website')->nullable();
             $table->unsignedSmallInteger('foundation_year')->nullable();
             $table->string('logo')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
