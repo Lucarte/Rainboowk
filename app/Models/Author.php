@@ -15,12 +15,12 @@ class Author extends Model
         return $this->hasMany(Book::class, 'author_id', 'id');
     }
 
+
     public function getFullname()
     {
         $fullname = $this->first_name . ' ' . $this->last_name;
         return Str::slug($fullname, '_');
     }
-
 
     protected $fillable = [
         'user_id',

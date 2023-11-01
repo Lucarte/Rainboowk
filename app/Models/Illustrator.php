@@ -11,4 +11,17 @@ class Illustrator extends Model
     {
         return $this->hasMany(Book::class, 'illustrator_id', 'id');
     }
+
+    protected $fillable = [
+        'user_id',
+        'first_name',
+        'last_name',
+        'date_of_birth',
+        'date_of_death',
+        'biography',
+        'nationality',
+        'contact_email',
+        'website',
+        'awards_and_honors',
+    ];
 }

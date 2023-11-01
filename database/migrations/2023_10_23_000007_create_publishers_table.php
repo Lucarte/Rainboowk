@@ -18,7 +18,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('website')->nullable();
             $table->unsignedSmallInteger('foundation_year')->nullable();
-            $table->string('logo')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')

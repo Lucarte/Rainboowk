@@ -16,15 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('fullname')->virtualAs('CONCAT(first_name, " ", last_name)');
             $table->date('date_of_birth')->nullable();
             $table->date('date_of_death')->nullable();
             $table->text('biography')->nullable();
             $table->string('nationality')->nullable();
             $table->string('contact_email')->nullable()->unique();
             $table->string('website')->nullable();
-            $table->string('genre_specialization')->nullable();
             $table->text('awards_and_honors')->nullable();
-            $table->string('image')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')
