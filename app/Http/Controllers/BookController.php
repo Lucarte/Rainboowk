@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Book;
+use App\Models\Illustrator;
+use App\Models\Publisher;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,61 +22,93 @@ class BookController extends Controller
             $policyResp = Gate::inspect('create', Book::class);
 
             if ($policyResp->allowed()) {
+                $rules = [
+                    'ISBN' => 'required|isbn',
+                    'title' => 'required|string|max:255',
+                    'description' => 'required|string',
+                    'print_date' => 'required|date',
+                    'original_language' => 'required|string|max:255',
+                    'publisher_id' => 'required|exists:publishers,id', // New validation rule
+                ];
 
-                // $rules = [
-                //     'ISBN' => 'required|isbn',
-                //     'title' => 'required|max:255',
-                //     'description' => 'required',
-                //     'author_id' => 'required|exists:authors,id', // check if still done this way or simply 'numeric' is enough
-                //     'illustrator_id' => 'nullable|exists:illustrators,id',
-                //     'print_date' => 'required|printDate', // Check if need to use releaseDate function like in Kids_Books project
-                //     'publisher_id' => 'required|exists:publishers,id',
-                //     'genre_id' => 'nullable|required|exists:genres,id',
-                //     'original_language' => 'required|max:255',
-                // ];
+                $validator = Validator::make($request->all(), $rules);
 
-                // $validator = Validator::make($request->all(), $rules);
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+                }
 
-                // if ($validator->fails()) {
-                //     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
-                // }
+                // Check if a book with the same title and author exists
+                $existingBook = Book::where('title', $request->input('title'))
+                    ->where('author_id', $request->input('author_id'))
+                    ->first();
 
-                $user = Auth::user(); // Get the authenticated user
+                if ($existingBook) {
+                    return response()->json(['message' => 'A book with the same title and author already exists.'], Response::HTTP_CONFLICT);
+                }
 
+                // Get the authenticated user
+                $user = Auth::user();
+
+                // Create a new book instance and set its attributes
                 $book = new Book();
-                $book->user_id = $user->id; // Set the 'user_id' based on the authenticated user
+                $book->user_id = $user->id;
                 $book->ISBN = $request->input('ISBN');
                 $book->title = $request->input('title');
                 $book->description = $request->input('description');
-                $book->author_id = $request->input('author_id');
-                $book->illustrator_id = $request->input('illustrator_id');
-                $book->print_date = $request->input('print_date');
-                // $book->print_date = $request->input->strtotime('printDate');
-                $book->publisher_id = $request->input('publisher_id');
                 $book->original_language = $request->input('original_language');
 
+                // Find and set the publisher based on the provided 'publisher_id'
+                $publisher = Publisher::find($request->input('publisher_id'));
+                if (!$publisher) {
+                    return response()->json(['message' => 'Publisher not found'], Response::HTTP_NOT_FOUND);
+                }
+
+                $book->publisher()->associate($publisher);
+
+                $book->print_date = $request->input('print_date');
+                $book->author_id = $request->input('author_id');
+                $book->illustrator_id = $request->input('illustrator_id');
+
+                // Save the book
                 $book->save();
+
+                // Attach authors & illustrators
+                if ($request->has('author_id')) {
+                    $book->authors()->attach($request->input('author_id'));
+                }
+                if ($request->has('illustrator_id')) {
+                    $book->illustrators()->attach($request->input('illustrator_id'));
+                }
 
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
             }
-
-            return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
         } catch (Exception $e) {
             return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function delete(string $book_lan, string $id)
+
+
+    public function delete(string $title)
     {
         try {
-            $book = Book::where('original_language', $book_lan)->find($id);
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $book = Book::where('title', $title)->first();
 
             $policyResp = Gate::inspect('delete', $book);
 
             if ($policyResp->allowed()) {
-                $book->delete();
-
-                return response()->json(['message' => $policyResp->message()], Response::HTTP_OK);
+                if ($book) {
+                    $book->delete();
+                    return response()->json(['message' => 'Book deleted successfully'], Response::HTTP_OK);
+                } else {
+                    return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
+                }
             }
 
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
@@ -81,15 +117,21 @@ class BookController extends Controller
         }
     }
 
-    public function getById(string $book_lan, string $id)
+
+
+    public function getByTitle(string $title)
     {
         try {
-            $policyResp = Gate::inspect('getById', Book::class);
+            $policyResp = Gate::inspect('getByTitle', Book::class);
 
             if ($policyResp->allowed()) {
-                $book = Book::where('original_language', $book_lan)->find($id);
+                $book = Book::where('title', $title)->first();
 
-                return response()->json(['message' => $policyResp->message(), 'book' => $book], Response::HTTP_OK);
+                if ($book) {
+                    return response()->json(['message' => $policyResp->message(), 'book' => $book], Response::HTTP_OK);
+                }
+
+                return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
             }
 
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
@@ -98,13 +140,14 @@ class BookController extends Controller
         }
     }
 
-    public function list(Request $request, string $book_lan)
+
+    public function list()
     {
         try {
             $policyResp = Gate::inspect('list', Book::class);
 
             if ($policyResp->allowed()) {
-                $books = Book::where('original_language', $book_lan)->get();
+                $books = Book::all();
 
                 return response()->json(['message' => $policyResp->message(), 'books' => $books], Response::HTTP_OK);
             }
@@ -115,10 +158,11 @@ class BookController extends Controller
         }
     }
 
-    public function update(Request $request, string $book_lan, string $id)
+
+    public function update(Request $request, string $title)
     {
         try {
-            $book = Book::where('original_language', $book_lan)->find($id);
+            $book = Book::where('title', $title)->first();
 
             $policyResp = Gate::inspect('update', $book);
 
@@ -127,11 +171,7 @@ class BookController extends Controller
                     'ISBN' => 'required|isbn',
                     'title' => 'required|string|max:255',
                     'description' => 'required|string',
-                    'author_id' => 'required|exists:authors,id', // check if still done this way or simply 'numeric' is enough
-                    'illustrator_id' => 'nullable|exists:illustrators,id',
-                    'print_date' => 'required|printDate', // Check if need to use releaseDate function like in Kids_Books project
-                    'publisher_id' => 'required|exists:publishers,id',
-                    'genre_id' => 'required|exists:genres,id',
+                    'print_date' => 'required|date',
                     'original_language' => 'required|string|max:255',
                 ];
 
@@ -141,7 +181,7 @@ class BookController extends Controller
                     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
                 }
 
-                $book->title = $request->input('title'); // update this line by necessity
+                $book->title = $request->input('title');
 
                 $book->save();
 

@@ -30,16 +30,11 @@ class Book extends Model
 
     public function publisher()
     {
-        return $this->belongsTo(Publisher::class, 'book_id', 'id');
+        return $this->belongsTo(Publisher::class, 'publisher_id', 'id');
     }
 
-    public function genres()
-    {
-        return $this->belongsToMany(Genre::class, 'book_genre', 'book_id', 'genre_id');
-    }
-
-    public function getPrintDate(): string
-    {
-        return date('F, Y', $this->printDate);
-    }
+    // public function getPrintDate(): string
+    // {
+    //     return date('F, Y', $this->printDate);
+    // }
 }

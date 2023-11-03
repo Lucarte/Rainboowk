@@ -14,11 +14,11 @@ class AppServiceProvider extends ServiceProvider
             return (strlen($value) === 13) && ctype_digit($value);
         });
 
-        Validator::extend('printDate', function ($attribute, $value) {
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
-                throw new \Exception("=> Datum muss folgendes Format haben: YYYY-MM-DD (z.B. 2023-03-15)");
-            }
-        });
+        // Validator::extend('printDate', function ($attribute, $value) {
+        //     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+        //         throw new \Exception("=> Datum muss folgendes Format haben: YYYY-MM-DD (z.B. 2023-03-15)");
+        //     }
+        // });
     }
 
 

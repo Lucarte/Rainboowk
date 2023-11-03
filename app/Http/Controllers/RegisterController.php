@@ -41,6 +41,7 @@ class RegisterController extends Controller
 
 
         $user = User::create([
+            'pronouns' => $request->get('pronouns'),
             'salutation' => $request->get('salutation'),
             'username' => $request->get('username'),
             'email' => $request->get('email'),

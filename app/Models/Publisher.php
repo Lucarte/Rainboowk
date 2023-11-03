@@ -11,4 +11,12 @@ class Publisher extends Model
     {
         return $this->hasMany(Book::class, 'publisher_id', 'id');
     }
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'description',
+        'website',
+        'foundation_year'
+    ];
 }

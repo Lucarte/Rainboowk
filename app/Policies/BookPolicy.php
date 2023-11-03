@@ -22,7 +22,7 @@ class BookPolicy
 
     public function delete(User $user, Book $book)
     {
-        return $user->username === $book->user_id ? Response::allow('BookPolicy - delete - allowed') : Response::deny('BookPolicy - delete - denied');
+        return $user->id === $book->user_id ? Response::allow('BookPolicy - delete - allowed') : Response::deny('BookPolicy - delete - denied');
     }
 
     // Nur für 'admin'
@@ -31,7 +31,7 @@ class BookPolicy
         return $user->username === $book->user_id ? Response::allow('BookPolicy - getAll - allowed') : Response::deny('BookPolicy - getAll - denied');
     }
 
-    public function getById(User $user, Book $book)
+    public function getByTitle(User $user, Book $book)
     {
         // Is someone logged in...
         return $user->username !== null ? Response::allow('BookPolicy - getById - allowed') : Response::deny('BookPolicy - getById - denied');
@@ -39,6 +39,6 @@ class BookPolicy
 
     public function update(User $user, Book $book)
     {
-        return $user->username === $book->user_id ? Response::allow('BookPolicy - update - allowed') : Response::deny('BookPolicy - update - denied');
+        return $user->id === $book->user_id ? Response::allow('BookPolicy - update - allowed') : Response::deny('BookPolicy - update - denied');
     }
 }

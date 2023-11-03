@@ -10,13 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AuthorController extends Controller
 {
 
-    public function createAuthor(Request $request, $username)
+    public function createAuthor(Request $request)
     {
         try {
             $policyResp = Gate::inspect('createAuthor', Author::class);
@@ -25,18 +24,8 @@ class AuthorController extends Controller
 
                 // Validate author data
                 $rules = [
-                    'first_name' => [
-                        'required',
-                        'max:255',
-                        'alpha',
-                        new UniqueAuthorNameRule,
-                    ],
-                    'last_name' => [
-                        'required',
-                        'max:255',
-                        'alpha',
-                        new UniqueAuthorNameRule,
-                    ],
+                    'first_name' => 'required|max:255|alpha',
+                    'last_name' => 'required|max:255|alpha',
                     'date_of_birth' => 'date|nullable',
                     'date_of_death' => 'date|nullable',
                     'biography' => 'nullable',
@@ -52,14 +41,21 @@ class AuthorController extends Controller
                     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
                 }
 
-                // Find the user based on the provided username
-                $user = User::where('username', $username)->first();
+                // Check if an author with the same first name and last name already exists
+                $existingAuthor = Author::where('first_name', $request->input('first_name'))
+                    ->where('last_name', $request->input('last_name'))
+                    ->first();
+
+                if ($existingAuthor) {
+                    return response()->json(['message' => 'This author already exists in the database.'], Response::HTTP_CONFLICT);
+                }
+
+                // Retrieve user
+                $user = Auth::user();
 
                 if (!$user) {
                     return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
                 }
-
-                // $user = Auth::user(); // Get the authenticated user
 
                 // Store Author data
                 $author = new Author();
@@ -85,12 +81,14 @@ class AuthorController extends Controller
         }
     }
 
-    public function deleteAuthor($username, $slug)
+
+
+    public function deleteAuthor($slug)
     {
         try {
 
-            // Retrieve the user based on the provided username
-            $user = User::where('username', $username)->first();
+            // Retrieve user
+            $user = Auth::user();
 
             if (!$user) {
                 return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
@@ -137,11 +135,11 @@ class AuthorController extends Controller
         }
     }
 
-    public function updateAuthor(Request $request, $username, $slug)
+    public function updateAuthor(Request $request, $slug)
     {
         try {
-            // Retrieve the user based on the provided username
-            $user = User::where('username', $username)->first();
+            // Retrieve user
+            $user = Auth::user();
 
             if (!$user) {
                 return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
@@ -157,6 +155,35 @@ class AuthorController extends Controller
             $policyResp = Gate::inspect('updateAuthor', $author);
 
             if ($policyResp->allowed()) {
+
+                // Validate author data
+                $rules = [
+                    'first_name' => 'required|max:255|alpha',
+                    'last_name' => 'required|max:255|alpha',
+                    'date_of_birth' => 'date|nullable',
+                    'date_of_death' => 'date|nullable',
+                    'biography' => 'nullable',
+                    'nationality' => 'max:255|nullable',
+                    'contact_email' => 'email|max:255|nullable|unique:authors',
+                    'website' => 'max:255|nullable',
+                    'awards_and_honors' => 'nullable'
+                ];
+
+                $validator = Validator::make($request->all(), $rules);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+                }
+
+                // Check if an author with the same first name and last name already exists
+                $existingAuthor = Author::where('first_name', $request->input('first_name'))
+                    ->where('last_name', $request->input('last_name'))
+                    ->first();
+
+                if ($existingAuthor) {
+                    return response()->json(['message' => 'This author already exists in the database.'], Response::HTTP_CONFLICT);
+                }
+
                 // Update the author's information based on the request data
                 $author->update([
                     'first_name' => $request->input('first_name'),
@@ -167,7 +194,7 @@ class AuthorController extends Controller
                     'nationality' => $request->input('nationality'),
                     'contact_email' => $request->input('contact_email'),
                     'website' => $request->input('website'),
-                    'awards_and_honor' => $request->input('awards_and_honor')
+                    'awards_and_honors' => $request->input('awards_and_honor')
                 ]);
 
                 return response()->json(['message' => 'Author updated successfully'], Response::HTTP_OK);
