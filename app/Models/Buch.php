@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Book extends Model
+class Buch extends Model
 {
     use HasFactory;
 
-    // sowie by posts gibt es ein user_id, by books an author_id USW:
+    // sowie by posts gibt es ein user_id, by Libros an author_id USW:
     // to establish these relationships:
 
     public function user()
@@ -19,12 +19,12 @@ class Book extends Model
 
     public function authors()
     {
-        return $this->belongsToMany(Author::class, 'book_author', 'book_id', 'author_id');
+        return $this->belongsToMany(Author::class, 'buch_author', 'book_id', 'author_id');
     }
 
     public function illustrators()
     {
-        return $this->belongsToMany(Illustrator::class, 'book_illustrator', 'book_id', 'illustrator_id');
+        return $this->belongsToMany(Illustrator::class, 'buch_illustrator', 'book_id', 'illustrator_id');
     }
 
     public function publisher()

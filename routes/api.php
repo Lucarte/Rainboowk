@@ -21,20 +21,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'getAll']);
 
 // Get a specific book or a list of books
-Route::get('/books', [BookController::class, 'list']);
-Route::get('/books/{title}', [BookController::class, 'getByTitle']);
+Route::get('/book', [BookController::class, 'list']);
+Route::get('/book/{title}', [BookController::class, 'getByTitle']);
 
 // // Get a specific book or a list of books in spanish (libros)
 // Route::get('/libros', [LibroController::class, 'list']);
-// Route::get('/libros/{title}', [LibroController::class, 'getByTitle']);
+Route::get('/libro/{title}', [LibroController::class, 'getByTitle']);
 
 // // Get a specific book or a list of books in german (buecher)
-// Route::get('/buecher', [BuchController::class, 'list']);
-// Route::get('/buecher/{title}', [BuchController::class, 'getByTitle']);
+// Route::get('/buch', [BuchController::class, 'list']);
+// Route::get('/buch/{title}', [BuchController::class, 'getByTitle']);
 
 // // Get a specific book or a list of books in french (livres)
-// Route::get('/livres', [LivreController::class, 'list']);
-// Route::get('/livres/{title}', [LivreController::class, 'getByTitle']);
+// Route::get('/livre', [LivreController::class, 'list']);
+Route::get('/livre/{title}', [LivreController::class, 'getByTitle']);
 
 // Get a specific author's info. + list of books written by them
 Route::get('/author/{slug}', [AuthorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
@@ -63,45 +63,45 @@ Route::prefix('auth')->group(function () {
         Route::post('/user/logout', LogoutController::class);
 
         Route::controller(BookController::class)->group(function () {
-            Route::post('/user/books/create', 'create');
-            Route::patch('/user/books/update/{title}', 'update')->whereAlphaNumeric('title');
-            Route::delete('/user/books/delete/{title}', 'delete')->whereAlphaNumeric('title');
+            Route::post('/book/create', 'create');
+            Route::patch('/book/update/{title}', 'update');
+            Route::delete('/book/delete/{title}', 'delete');
         });
 
-        // Route::controller(LibroController::class)->group(function () {
-        //     Route::post('/libros/create', 'create');
-        //     Route::patch('/libros/update/{title}', 'update')->whereAlphaNumeric('title');
-        //     Route::delete('/libros/delete/{title}', 'delete')->whereAlphaNumeric('title');
-        // });
+        Route::controller(LibroController::class)->group(function () {
+            Route::post('/libro/create', 'create');
+            Route::patch('/libro/update/{title}', 'update');
+            Route::delete('/libro/delete/{title}', 'delete');
+        });
 
-        // Route::controller(BuchController::class)->group(function () {
-        //     Route::post('/buecher/create', 'create');
-        //     Route::patch('/buecher/update/{title}', 'update')->whereAlphaNumeric('title');
-        //     Route::delete('/buecher/delete/{title}', 'delete')->whereAlphaNumeric('title');
-        // });
+        Route::controller(BuchController::class)->group(function () {
+            Route::post('/buch/create', 'create');
+            // Route::patch('/buch/update/{title}', 'update');
+            // Route::delete('/buch/delete/{title}', 'delete');
+        });
 
-        // Route::controller(LivreController::class)->group(function () {
-        //     Route::post('/livres/create', 'create');
-        //     Route::patch('/livres/update/{title}', 'update')->whereAlphaNumeric('title');
-        //     Route::delete('/livres/delete/{title}', 'delete')->whereAlphaNumeric('title');
-        // });
+        Route::controller(LivreController::class)->group(function () {
+            Route::post('/livre/create', 'create');
+            Route::patch('/livre/update/{title}', 'update');
+            Route::delete('/livre/delete/{title}', 'delete');
+        });
 
         Route::controller(AuthorController::class)->group(function () {
-            Route::post('/user/create_author', 'createAuthor');
-            Route::patch('/user/update_author/{slug}', 'updateAuthor')->where('slug', '[A-Za-z_]+');
-            Route::delete('/user/delete_author/{slug}', 'deleteAuthor')->where('slug', '[A-Za-z_]+');
+            Route::post('/create_author', 'createAuthor');
+            Route::patch('/update_author/{slug}', 'updateAuthor')->where('slug', '[A-Za-z_]+');
+            Route::delete('/delete_author/{slug}', 'deleteAuthor')->where('slug', '[A-Za-z_]+');
         });
 
         Route::controller(IllustratorController::class)->group(function () {
-            Route::post('/user/create_illustrator', 'createIllustrator');
-            Route::patch('/user/update_illustrator/{slug}', 'updateIllustrator')->where('slug', '[A-Za-z_]+');
-            Route::delete('/user/delete_illustrator/{slug}', 'deleteIllustrator')->where('slug', '[A-Za-z_]+');
+            Route::post('/create_illustrator', 'createIllustrator');
+            Route::patch('/update_illustrator/{slug}', 'updateIllustrator')->where('slug', '[A-Za-z_]+');
+            Route::delete('/delete_illustrator/{slug}', 'deleteIllustrator')->where('slug', '[A-Za-z_]+');
         });
 
         Route::controller(PublisherController::class)->group(function () {
-            Route::post('/user/create_publisher', 'createPublisher');
-            Route::patch('/user/update_publisher/{name}', 'updatePublisher')->whereAlphaNumeric('name');;
-            Route::delete('/user/delete_publisher/{name}', 'deletePublisher')->whereAlphaNumeric('name');;
+            Route::post('/create_publisher', 'createPublisher');
+            Route::patch('/update_publisher/{name}', 'updatePublisher')->whereAlphaNumeric('name');;
+            Route::delete('/delete_publisher/{name}', 'deletePublisher')->whereAlphaNumeric('name');;
         });
 
         // User possibilities: retrieve or update their info., or delete their profile

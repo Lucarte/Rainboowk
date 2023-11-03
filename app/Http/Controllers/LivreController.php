@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
+use App\Models\Livre;
 use App\Models\Publisher;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
-class BookController extends Controller
+class LivreController extends Controller
 {
     public function create(Request $request)
     {
         try {
-            $policyResp = Gate::inspect('create', Book::class);
+            $policyResp = Gate::inspect('create', Livre::class);
 
             if ($policyResp->allowed()) {
                 $rules = [
@@ -34,25 +34,25 @@ class BookController extends Controller
                     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
                 }
 
-                // Check if a book with the same title and author exists
-                $existingBook = Book::where('title', $request->input('title'))
+                // Check if a Livre with the same title and author exists
+                $existingLivre = Livre::where('title', $request->input('title'))
                     ->where('author_id', $request->input('author_id'))
                     ->first();
 
-                if ($existingBook) {
-                    return response()->json(['message' => 'A book with the same title and author already exists.'], Response::HTTP_CONFLICT);
+                if ($existingLivre) {
+                    return response()->json(['message' => 'A Livre with the same title and author already exists.'], Response::HTTP_CONFLICT);
                 }
 
                 // Get the authenticated user
                 $user = Auth::user();
 
-                // Create a new book instance and set its attributes
-                $book = new Book();
-                $book->user_id = $user->id;
-                $book->ISBN = $request->input('ISBN');
-                $book->title = $request->input('title');
-                $book->description = $request->input('description');
-                $book->original_language = $request->input('original_language');
+                // Create a new Livre instance and set its attributes
+                $livre = new Livre();
+                $livre->user_id = $user->id;
+                $livre->ISBN = $request->input('ISBN');
+                $livre->title = $request->input('title');
+                $livre->description = $request->input('description');
+                $livre->original_language = $request->input('original_language');
 
                 // Find and set the publisher based on the provided 'publisher_id'
                 $publisher = Publisher::find($request->input('publisher_id'));
@@ -60,21 +60,21 @@ class BookController extends Controller
                     return response()->json(['message' => 'Publisher not found'], Response::HTTP_NOT_FOUND);
                 }
 
-                $book->publisher()->associate($publisher);
+                $livre->publisher()->associate($publisher);
 
-                $book->print_date = $request->input('print_date');
-                $book->author_id = $request->input('author_id');
-                $book->illustrator_id = $request->input('illustrator_id');
+                $livre->print_date = $request->input('print_date');
+                $livre->author_id = $request->input('author_id');
+                $livre->illustrator_id = $request->input('illustrator_id');
 
-                // Save the book
-                $book->save();
+                // Save the Livre
+                $livre->save();
 
                 // Attach authors & illustrators
                 if ($request->has('author_id')) {
-                    $book->authors()->attach($request->input('author_id'));
+                    $livre->authors()->attach($request->input('author_id'));
                 }
                 if ($request->has('illustrator_id')) {
-                    $book->illustrators()->attach($request->input('illustrator_id'));
+                    $livre->illustrators()->attach($request->input('illustrator_id'));
                 }
 
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
@@ -95,16 +95,16 @@ class BookController extends Controller
                 return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
             }
 
-            $book = Book::where('title', $title)->first();
+            $livre = Livre::where('title', $title)->first();
 
-            $policyResp = Gate::inspect('delete', $book);
+            $policyResp = Gate::inspect('delete', $livre);
 
             if ($policyResp->allowed()) {
-                if ($book) {
-                    $book->delete();
-                    return response()->json(['message' => 'Book deleted successfully'], Response::HTTP_OK);
+                if ($livre) {
+                    $livre->delete();
+                    return response()->json(['message' => 'Livre deleted successfully'], Response::HTTP_OK);
                 } else {
-                    return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
+                    return response()->json(['message' => 'Livre not found'], Response::HTTP_NOT_FOUND);
                 }
             }
 
@@ -115,13 +115,14 @@ class BookController extends Controller
     }
 
 
+
     public function getByTitle(string $title)
     {
         try {
-            $book = Book::where('title', $title)->first();
+            $livre = Livre::where('title', $title)->first();
 
-            if ($book) {
-                return response()->json(['book' => $book], Response::HTTP_NOT_FOUND);
+            if ($livre) {
+                return response()->json(['Livre' => $livre], Response::HTTP_NOT_FOUND);
             }
 
             // Book not found, return an error response
@@ -135,12 +136,12 @@ class BookController extends Controller
     public function list()
     {
         try {
-            $policyResp = Gate::inspect('list', Book::class);
+            $policyResp = Gate::inspect('list', Livre::class);
 
             if ($policyResp->allowed()) {
-                $books = Book::all();
+                $livres = Livre::all();
 
-                return response()->json(['message' => $policyResp->message(), 'books' => $books], Response::HTTP_OK);
+                return response()->json(['message' => $policyResp->message(), 'Livres' => $livres], Response::HTTP_OK);
             }
 
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
@@ -153,9 +154,9 @@ class BookController extends Controller
     public function update(Request $request, string $title)
     {
         try {
-            $book = Book::where('title', $title)->first();
+            $livre = Livre::where('title', $title)->first();
 
-            $policyResp = Gate::inspect('update', $book);
+            $policyResp = Gate::inspect('update', $livre);
 
             if ($policyResp->allowed()) {
                 $rules = [
@@ -172,9 +173,9 @@ class BookController extends Controller
                     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
                 }
 
-                $book->title = $request->input('title');
+                $livre->title = $request->input('title');
 
-                $book->save();
+                $livre->save();
 
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_OK);
             }

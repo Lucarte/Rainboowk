@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('books_german', function (Blueprint $table) {
+        Schema::create('livres', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('ISBN')->unique();
@@ -21,12 +21,10 @@ return new class extends Migration
             $table->unsignedBigInteger('illustrator_id')->index();
             $table->date('print_date');
             $table->unsignedBigInteger('publisher_id')->index();
-            $table->unsignedBigInteger('genre_id')->index();
             $table->string('original_language')->index();
             $table->timestamps();
 
             // Foreign key constraints with ON UPDATE CASCADE and ON DELETE CASCADE
-
 
             $table->foreign('user_id')
                 ->references('id')
@@ -59,6 +57,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('books_german');
+        Schema::dropIfExists('livres');
     }
 };

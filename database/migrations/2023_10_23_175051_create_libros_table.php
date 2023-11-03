@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('books_spanish', function (Blueprint $table) {
+        Schema::create('libros', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('ISBN')->unique();
@@ -21,7 +21,6 @@ return new class extends Migration
             $table->unsignedBigInteger('illustrator_id')->index();
             $table->date('print_date');
             $table->unsignedBigInteger('publisher_id')->index();
-            $table->unsignedBigInteger('genre_id')->index();
             $table->string('original_language')->index();
             $table->timestamps();
 
@@ -59,6 +58,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('books_spanish');
+        Schema::dropIfExists('libros');
     }
 };

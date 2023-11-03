@@ -15,6 +15,11 @@ class Author extends Model
         return $this->hasMany(Book::class, 'author_id', 'id');
     }
 
+    public function libros()
+    {
+        return $this->hasMany(Libro::class, 'author_id', 'id');
+    }
+
 
     public function getFullname()
     {
