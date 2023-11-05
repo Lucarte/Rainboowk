@@ -138,9 +138,9 @@ class BuchController extends Controller
             $policyResp = Gate::inspect('list', Buch::class);
 
             if ($policyResp->allowed()) {
-                $buchs = Buch::all();
+                $buecher = Buch::all();
 
-                return response()->json(['message' => $policyResp->message(), 'Buchs' => $buchs], Response::HTTP_OK);
+                return response()->json(['message' => $policyResp->message(), 'buecher' => $buecher], Response::HTTP_OK);
             }
 
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);

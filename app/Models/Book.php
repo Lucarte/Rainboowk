@@ -32,6 +32,12 @@ class Book extends Model
         return $this->belongsTo(Publisher::class, 'publisher_id', 'id');
     }
 
+    public function cover()
+    {
+        return $this->hasOne(Cover::class, 'book_id');
+    }
+
+
     // public function getPrintDate(): string
     // {
     //     return date('F, Y', $this->printDate);

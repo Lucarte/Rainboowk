@@ -30,7 +30,7 @@ Route::get('/libro/{title}', [LibroController::class, 'getByTitle']);
 
 // // Get a specific book or a list of books in german (buecher)
 // Route::get('/buch', [BuchController::class, 'list']);
-// Route::get('/buch/{title}', [BuchController::class, 'getByTitle']);
+Route::get('/buch/{title}', [BuchController::class, 'getByTitle']);
 
 // // Get a specific book or a list of books in french (livres)
 // Route::get('/livre', [LivreController::class, 'list']);
@@ -74,10 +74,11 @@ Route::prefix('auth')->group(function () {
             Route::delete('/libro/delete/{title}', 'delete');
         });
 
+        // Routes do not work
         Route::controller(BuchController::class)->group(function () {
             Route::post('/buch/create', 'create');
-            // Route::patch('/buch/update/{title}', 'update');
-            // Route::delete('/buch/delete/{title}', 'delete');
+            Route::patch('/buch/update/{title}', 'update');
+            Route::delete('/buch/delete/{title}', 'delete');
         });
 
         Route::controller(LivreController::class)->group(function () {
@@ -104,6 +105,18 @@ Route::prefix('auth')->group(function () {
             Route::delete('/delete_publisher/{name}', 'deletePublisher')->whereAlphaNumeric('name');;
         });
 
+        Route::controller(PublisherController::class)->group(function () {
+            Route::post('/create_publisher', 'createPublisher');
+            Route::patch('/update_publisher/{name}', 'updatePublisher')->whereAlphaNumeric('name');;
+            Route::delete('/delete_publisher/{name}', 'deletePublisher')->whereAlphaNumeric('name');;
+        });
+
+        Route::controller(CoverController::class)->group(function () {
+            Route::post('/upload_cover', 'uploadCover');
+            // Route::patch('/upload_cover/{id}', 'updateCover')->whereInt('id');
+            // Route::delete('/upload_cover/{id}', 'deleteCover')->whereInt('id');
+        });
+
         // User possibilities: retrieve or update their info., or delete their profile
         Route::controller(UserController::class)->group(function () {
             // Need a route where 'admin' can see all users and if need be delete them
@@ -120,19 +133,19 @@ Route::prefix('auth')->group(function () {
 
 
 // // Search by Book Name
-// Route::get('/search/books-by-name', [SearchController::class, 'searchBooksByName']);
+// Route::get('/search/{o_lan}/{title}', [SearchController::class, 'searchBooksByLanguageAndName']);
 
 // // Search by ISBN
-// Route::get('/search/books-by-isbn', [SearchController::class, 'searchBooksByISBN']);
+// Route::get('/search/{o_lan}/{isbn}', [SearchController::class, 'searchBooksByLanguageAndISBN']);
 
 // // Search by Author
-// Route::get('/search/books-by-author/{authorName}', [SearchController::class, 'searchBooksByAuthor']);
+// Route::get('/search/{o_lan}/{fullname}', [SearchController::class, 'searchBooksByLanguageAndAuthor']);
 
 // // Search by Illustrator
-// Route::get('/search/books-by-illustrator/{illustratorName}', [SearchController::class, 'searchBooksByIllustrator']);
+// Route::get('/search/{o_lan}/{fullname}', [SearchController::class, 'searchBooksByLanguageAndIllustrator']);
 
 // // Search by Publisher
-// Route::get('/search/books-by-publisher/{publisherName}', [SearchController::class, 'searchBooksByPublisher']);
+// Route::get('/search/{o_lan}/{name}', [SearchController::class, 'searchBooksByLanguageAndPublisher']);
 
 
 // 404
