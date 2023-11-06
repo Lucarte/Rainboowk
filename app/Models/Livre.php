@@ -34,7 +34,7 @@ class Livre extends Model
 
     public function cover()
     {
-        return $this->hasOne(Cover::class, 'cover_id');
+        return $this->hasOne(Cover::class, 'livre_id');
     }
 
     // public function getPrintDate(): string

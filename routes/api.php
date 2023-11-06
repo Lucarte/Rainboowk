@@ -113,8 +113,8 @@ Route::prefix('auth')->group(function () {
 
         Route::controller(CoverController::class)->group(function () {
             Route::post('/upload_cover', 'uploadCover');
+            Route::delete('/delete_cover/{id}', 'deleteCover')->whereNumber('id');
             // Route::patch('/upload_cover/{id}', 'updateCover')->whereInt('id');
-            // Route::delete('/upload_cover/{id}', 'deleteCover')->whereInt('id');
         });
 
         // User possibilities: retrieve or update their info., or delete their profile

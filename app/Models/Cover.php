@@ -10,6 +10,7 @@ class Cover extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'image_path',
         // Add any other common attributes here
     ];

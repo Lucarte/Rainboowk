@@ -31,6 +31,7 @@ class CoverController extends Controller
             if ($policyResp->allowed()) {
                 // Validate the incoming data
                 $validatedData = $request->validate([
+                    'user_id' => 'required|exists:users,id', // Validate the user_id
                     'book_id' => 'required_without_all:libro_id,livre_id,buch_id|integer',
                     'libro_id' => 'required_without_all:book_id,livre_id,buch_id|integer',
                     'livre_id' => 'required_without_all:book_id,libro_id,buch_id|integer',
@@ -40,7 +41,8 @@ class CoverController extends Controller
 
                 // Create a new cover
                 $cover = new Cover([
-                    'image_path' => $validatedData['image_path']
+                    'image_path' => $validatedData['image_path'],
+                    'user_id' => $validatedData['user_id'], // Set the user_id
                 ]);
 
                 if ($request->has('book_id')) {
@@ -57,11 +59,12 @@ class CoverController extends Controller
                     $buch->cover()->save($cover);
                 }
 
-                // Save the cover and associate it with the appropriate model
+                // Save the cover
                 $cover->save();
 
                 // Handle image upload and storage
                 if (!$request->hasFile('image_path')) {
+                    // if (!$request->hasFile('path/to/cover.jpg')) {
                     return response()->json(['message' => 'No cover saved'], Response::HTTP_BAD_REQUEST);
                 }
 
@@ -78,39 +81,29 @@ class CoverController extends Controller
     }
 
 
-    public function deleteCover(Cover $cover)
+
+    public function deleteCover(int $id)
     {
         try {
-            // Authenticate the user
             $user = Auth::user();
 
             if (!$user) {
                 return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
             }
 
+            // Find the Cover by ID
+            // $cover = Cover::findOrFail($id);
+            $cover = Cover::where('id', $id)->first();
+
             // Check authorization using Gate policy
             $policyResp = Gate::inspect('deleteCover', $cover);
 
             if ($policyResp->allowed()) {
-                // Dissociate the cover association from the book, libro, livre, or buch (if applicable)
-                if ($cover->bookCovers) {
-                    $cover->bookCovers->book->cover()->dissociate();
-                    $cover->bookCovers->delete();
-                } elseif ($cover->libroCovers) {
-                    $cover->libroCovers->libro->cover()->dissociate();
-                    $cover->libroCovers->delete();
-                } elseif ($cover->livreCovers) {
-                    $cover->livreCovers->livre->cover()->dissociate();
-                    $cover->livreCovers->delete();
-                } elseif ($cover->buchCovers) {
-                    $cover->buchCovers->buch->cover()->dissociate();
-                    $cover->buchCovers->delete();
+                if ($cover) {
+                    // Delete the cover
+                    $cover->delete();
+                    return response()->json(['message' => 'Cover deleted successfully'], Response::HTTP_OK);
                 }
-
-                // Delete the cover and associated image file (if applicable)
-                $cover->delete();
-
-                return response()->json(['message' => 'Cover deleted successfully'], Response::HTTP_OK);
             }
 
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
@@ -119,9 +112,13 @@ class CoverController extends Controller
         }
     }
 
-    public function editCover(Request $request, Cover $cover)
+
+    public function editCover(Request $request, $id)
     {
         try {
+            // Find the Cover by ID
+            $cover = Cover::findOrFail($id);
+
             // Authenticate the user
             $user = Auth::user();
 
