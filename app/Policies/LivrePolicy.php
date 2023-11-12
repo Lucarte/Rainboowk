@@ -2,17 +2,16 @@
 
 namespace App\Policies;
 
-use App\Http\Controllers\LoginController;
 use App\Models\User;
 use App\Models\Livre;
 use Illuminate\Auth\Access\Response;
 
 class LivrePolicy
 {
-    // true null vs. true false // change this to a real check od admin 'role'
+    // true null vs. true false
     public function before(User $user)
     {
-        return LoginController::isAdmin($user) ? true : null;
+        return $user->isAdmin() ? true : null;
     }
 
     public function create(User $user)
@@ -25,10 +24,9 @@ class LivrePolicy
         return $user->id === $livre->user_id ? Response::allow('LivrePolicy - delete - allowed') : Response::deny('LivrePolicy - delete - denied');
     }
 
-    // Only for 'admin'
-    public function getAll(User $user, Livre $livre)
+    public function list()
     {
-        return $user->username === $livre->user_id ? Response::allow('LivrePolicy - getAll - allowed') : Response::deny('LivrePolicy - getAll - denied');
+        return Response::allow('LivrePolicy - list - allowed');
     }
 
     public function getByTitle(User $user, Livre $livre)

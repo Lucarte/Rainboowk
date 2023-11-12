@@ -84,16 +84,9 @@ class BookController extends Controller
         }
     }
 
-
-
     public function delete(string $title)
     {
         try {
-            $user = Auth::user();
-
-            if (!$user) {
-                return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
-            }
 
             $book = Book::where('title', $title)->first();
 
@@ -114,7 +107,6 @@ class BookController extends Controller
         }
     }
 
-
     public function getByTitle(string $title)
     {
         try {
@@ -130,7 +122,6 @@ class BookController extends Controller
             return response()->json(['message' => 'An error occurred'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function list()
     {
@@ -148,7 +139,6 @@ class BookController extends Controller
             return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function update(Request $request, string $title)
     {

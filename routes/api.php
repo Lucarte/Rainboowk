@@ -21,19 +21,19 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'getAll']);
 
 // Get a specific book or a list of books
-Route::get('/book', [BookController::class, 'list']);
+Route::get('/books', [BookController::class, 'list']);
 Route::get('/book/{title}', [BookController::class, 'getByTitle']);
 
-// // Get a specific book or a list of books in spanish (libros)
-// Route::get('/libros', [LibroController::class, 'list']);
+// Get a specific book or a list of books in spanish (libros)
+Route::get('/libros', [LibroController::class, 'list']);
 Route::get('/libro/{title}', [LibroController::class, 'getByTitle']);
 
-// // Get a specific book or a list of books in german (buecher)
-// Route::get('/buch', [BuchController::class, 'list']);
+// Get a specific book or a list of books in german (buecher)
+Route::get('/buecher', [BuchController::class, 'list']);
 Route::get('/buch/{title}', [BuchController::class, 'getByTitle']);
 
 // // Get a specific book or a list of books in french (livres)
-// Route::get('/livre', [LivreController::class, 'list']);
+Route::get('/livres', [LivreController::class, 'list']);
 Route::get('/livre/{title}', [LivreController::class, 'getByTitle']);
 
 // Get a specific author's info. + list of books written by them
@@ -47,7 +47,7 @@ Route::get('/publisher/{slug}', [PublisherController::class, 'getByFullname'])->
 
 
 // Infos about the project will be displayed here
-Route::get('/about', [AboutController::class, 'index']);;
+Route::get('/about', AboutController::class);;
 
 
 // All routes that deal with registration or login, or that need authetification will have the prefix 'auth'
@@ -56,7 +56,7 @@ Route::prefix('auth')->group(function () {
     Route::get('/register', [RegisterController::class, 'index']);
     Route::get('/login', [LoginController::class, 'index']);
     Route::post('/register', RegisterController::class);
-    Route::post('/login', [LoginController::class, 'create']);
+    Route::post('/login', LoginController::class);
 
     // Routes needing authentication
     Route::controller()->middleware('auth:sanctum')->group(function () {
@@ -114,16 +114,15 @@ Route::prefix('auth')->group(function () {
         Route::controller(CoverController::class)->group(function () {
             Route::post('/upload_cover', 'uploadCover');
             Route::delete('/delete_cover/{id}', 'deleteCover')->whereNumber('id');
-            // Route::patch('/upload_cover/{id}', 'updateCover')->whereInt('id');
+            Route::patch('/update_cover/{id}', 'updateCover')->whereNumber('id');
         });
 
         // User possibilities: retrieve or update their info., or delete their profile
         Route::controller(UserController::class)->group(function () {
-            // Need a route where 'admin' can see all users and if need be delete them
-            Route::get('/users', 'users');
-            Route::delete('/users', 'delete');
+            // 'admin' (set manually on DB) can see all users and if need be delete them
+            Route::get('/users', 'usersList');
 
-            // Routes for all other users not 'admin'
+            // Routes for all but only 'admin' or owner can make changes
             Route::get('/user/{username}', 'getByUsername')->whereAlphaNumeric('username');
             Route::patch('/user/{username}', 'update')->whereAlphaNumeric('username');
             Route::delete('/user/{username}', 'delete')->whereAlphaNumeric('username');

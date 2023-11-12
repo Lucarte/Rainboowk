@@ -9,10 +9,10 @@ use Illuminate\Auth\Access\Response;
 
 class BuchPolicy
 {
-    // true null vs. true false // change this to a real check od admin 'role'
+    // true null vs. true false
     public function before(User $user)
     {
-        return LoginController::isAdmin($user) ? true : null;
+        return $user->isAdmin() ? true : null;
     }
 
     public function create(User $user)
@@ -26,9 +26,9 @@ class BuchPolicy
     }
 
     // Only for 'admin'
-    public function getAll(User $user, Buch $buch)
+    public function list()
     {
-        return $user->username === $buch->user_id ? Response::allow('BuchPolicy - getAll - allowed') : Response::deny('BuchPolicy - getAll - denied');
+        return Response::allow('BuchPolicy - list - allowed');
     }
 
     public function getByTitle(User $user)

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
@@ -33,10 +34,10 @@ class RegisterController extends Controller
                 Password::min(8)->letters()->numbers()->mixedCase()->symbols()
             ],
             'password_confirmation' => ['required', 'min:8'],
-            'locality' => ['required'],
-            'personRole' => ['required'],
-            'publicity' => ['required'],
-            'terms' => ['required'],
+            'locality' => ['required', Rule::in(['within_Germany', 'beyond_Germany'])],
+            'personRole' => ['string', Rule::in(['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person'])],
+            'publicity' => ['string', Rule::in(['other', 'mouthword', 'online_search'])],
+            'terms' => ['required']
         ]);
 
 

@@ -9,10 +9,10 @@ use Illuminate\Auth\Access\Response;
 
 class BookPolicy
 {
-    // true null vs. true false // change this to a real check od admin 'role'
+    // true null vs. true false
     public function before(User $user)
     {
-        return LoginController::isAdmin($user) ? true : null;
+        return $user->isAdmin() ? true : null;
     }
 
     public function create(User $user)
@@ -25,16 +25,15 @@ class BookPolicy
         return $user->id === $book->user_id ? Response::allow('BookPolicy - delete - allowed') : Response::deny('BookPolicy - delete - denied');
     }
 
-    // Nur für 'admin'
-    public function getAll(User $user, Book $book)
+    public function list()
     {
-        return $user->username === $book->user_id ? Response::allow('BookPolicy - getAll - allowed') : Response::deny('BookPolicy - getAll - denied');
+        return Response::allow('BookPolicy - list - allowed');
     }
 
-    public function getByTitle(User $user, Book $book)
+    public function getByTitle(User $user)
     {
         // Is someone logged in...
-        return $user->username !== null ? Response::allow('BookPolicy - getById - allowed') : Response::deny('BookPolicy - getById - denied');
+        return $user->username !== null ? Response::allow('BookPolicy - getByTitle - allowed') : Response::deny('BookPolicy - getByTitle - denied');
     }
 
     public function update(User $user, Book $book)

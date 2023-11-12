@@ -11,8 +11,11 @@ class Cover extends Model
 
     protected $fillable = [
         'user_id',
+        'book_id',
+        'libro_id',
+        'livre_id',
+        'buch_id',
         'image_path',
-        // Add any other common attributes here
     ];
 
     // Define one-to-one relationships with different cover types
@@ -35,6 +38,4 @@ class Cover extends Model
     {
         return $this->belongsTo(Buch::class, 'buch_id');
     }
-
-    // Define common methods or attributes related to covers here
 }

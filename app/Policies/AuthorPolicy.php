@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UserController;
 use App\Models\Author;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -17,7 +17,7 @@ class AuthorPolicy
     public function deleteAuthor(User $user, Author $author)
     {
         // Check if the user is an admin or the owner of the author
-        if (LoginController::isAdmin($user) || $user->id === $author->user_id) {
+        if ($user->isAdmin() || $user->id === $author->user_id) {
             return Response::allow('AuthorPolicy - deleteAuthor - allowed');
         }
 
@@ -32,7 +32,7 @@ class AuthorPolicy
         }
 
         // Check if the user is an admin or the owner of the author
-        if (LoginController::isAdmin($user) || $user->id === $author->user_id) {
+        if ($user->isAdmin() || $user->id === $author->user_id) {
             return Response::allow('AuthorPolicy - getByFullname - allowed');
         }
 
@@ -43,7 +43,7 @@ class AuthorPolicy
     public function updateAuthor(User $user, Author $author)
     {
         // Check if the user is an admin or the owner of the author
-        if (LoginController::isAdmin($user) || $user->id === $author->user_id) {
+        if ($user->isAdmin() || $user->id === $author->user_id) {
             return Response::allow('AuthorPolicy - deleteAuthor - allowed');
         }
         return Response::deny('AuthorPolicy - updateAuthor - denied');

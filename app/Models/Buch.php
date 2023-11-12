@@ -12,6 +12,8 @@ class Buch extends Model
     // sowie by posts gibt es ein user_id, by Libros an author_id USW:
     // to establish these relationships:
 
+    public $table = 'buecher';
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

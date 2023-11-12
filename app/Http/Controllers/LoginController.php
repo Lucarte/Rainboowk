@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
-    public function create(Request $request)
+    public function __invoke(Request $request)
     {
         // validate input
         $validator = Validator::make($request->all(), [
@@ -45,12 +43,6 @@ class LoginController extends Controller
     public function index()
     {
         // TODO: angeforderten Datensatz zurückgeben
-        return response()->json(['message' => 'INDEX works from the Login Controller!'], Response::HTTP_OK);
-    }
-
-    // Update this logic to make it secure
-    public static function isAdmin(User $user)
-    {
-        return strtoupper($user->name) === strtoupper('admin');
+        return response()->json(['message' => 'LOGIN PLEASE'], Response::HTTP_OK);
     }
 }

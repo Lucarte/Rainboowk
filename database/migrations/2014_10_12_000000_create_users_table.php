@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('dob')->comment('date of birth');
             $table->timestamp('email_verified_at')->nullable()->default(null);
             $table->enum('locality', ['within_Germany', 'beyond_Germany']);
-            $table->enum('personRole', ['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person'])->index();
+            $table->enum('personRole', ['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person']);
             $table->enum('publicity', ['mouthword', 'online_search', 'other']);
             $table->string('password');
             $table->boolean('terms')->default(0);
