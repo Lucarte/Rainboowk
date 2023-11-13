@@ -25,7 +25,7 @@ class BuchController extends Controller
                     'description' => 'required|string',
                     'print_date' => 'required|date',
                     'original_language' => 'required|string|max:255',
-                    'publisher_id' => 'required|exists:publishers,id', // New validation rule
+                    'publisher_id' => 'required|exists:publishers,id'
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -113,7 +113,7 @@ class BuchController extends Controller
             $buch = Buch::where('title', $title)->first();
 
             if ($buch) {
-                return response()->json(['Buch' => $buch], Response::HTTP_NOT_FOUND);
+                return response()->json(['Buch' => $buch], Response::HTTP_OK);
             }
 
             // Buch not found, return an error response
@@ -153,7 +153,7 @@ class BuchController extends Controller
                     'title' => 'required|string|max:255',
                     'description' => 'required|string',
                     'print_date' => 'required|date',
-                    'original_language' => 'required|string|max:255',
+                    'original_language' => 'required|string|max:255'
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -162,7 +162,10 @@ class BuchController extends Controller
                     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
                 }
 
+                $buch->ISBN = $request->input('ISBN');
                 $buch->title = $request->input('title');
+                $buch->description = $request->input('description');
+                $buch->original_language = $request->input('original_language');
 
                 $buch->save();
 

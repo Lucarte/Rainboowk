@@ -36,7 +36,7 @@ class CoverController extends Controller
                 // Create a new cover
                 $cover = new Cover([
                     'image_path' => $validatedData['image_path'],
-                    'user_id' => $validatedData['user_id'], // Set the user_id
+                    'user_id' => $validatedData['user_id']
                 ]);
 
                 if ($request->has('book_id')) {
@@ -55,6 +55,7 @@ class CoverController extends Controller
 
                 // Save the cover
                 $cover->save();
+
                 // Handle image upload and storage
                 if (!$request->hasFile('image_path')) {
                     return response()->json(['message' => 'No cover saved.'], Response::HTTP_BAD_REQUEST);
@@ -105,85 +106,50 @@ class CoverController extends Controller
             return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
     public function updateCover(Request $request, $id)
     {
-
         try {
             // Find the Cover by ID
             $cover = Cover::findOrFail($id);
 
             // Check authorization using Gate policy
             $policyResp = Gate::inspect('updateCover', $cover);
-            dd($request->all());
+
             if ($policyResp->allowed()) {
-                // Check if a new image is provided in the request
+                $validatedData = $request->validate([
+                    // 'user_id' => 'required|exists:users,id',
+                    'image_path' => 'nullable|image|mimes:jpeg,png,gif',
+                ]);
+
+                // Check if image_path has changed and a valid file is present
                 if ($request->hasFile('image_path')) {
-                    // dd($request->hasFile('image_path'));
+
+                    // Update COver
+                    $cover->update([
+                        // 'user_id' => $validatedData['user_id'],
+                        'image_path' => $request->input('image_path')
+                    ]);
+
+                    // Handle image upload and storage
                     $extension = '.' . $request->file('image_path')->extension();
-                    // $title = $book->title ?? $libro->title ?? $livre->title ?? $buch->title;
+                    $title = $cover->book->title ?? $cover->libro->title ?? $cover->livre->title ?? $cover->buch->title;
+                    $path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $title . $extension, 'public');
 
-                    // Handle the image upload and storage
-                    $cover->image_path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $extension, 'public');
-                    $cover->save();
-
-                    return response()->json(['message' => 'Cover updated successfully'], Response::HTTP_OK);
-                } else {
-                    return response()->json(['message' => 'No image provided for update.'], Response::HTTP_BAD_REQUEST);
+                    // Set cover path
+                    $cover->image_path = $path;
                 }
+
+                // Save changes
+                $cover->save();
+
+                return response()->json(['message' => 'Cover updated successfully'], Response::HTTP_OK);
             }
+
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
         } catch (Exception $e) {
             return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-
-    // public function updateCover(Request $request, $id)
-    // {
-    //     try {
-    //         // Find the Cover by ID
-    //         $cover = Cover::findOrFail($id);
-
-    //         // Check authorization using Gate policy
-    //         $policyResp = Gate::inspect('updateCover', $cover);
-
-    //         if ($policyResp->allowed()) {
-    //             dd($request->input('image_path'));
-    //             // dd($request->file('image_path'));
-
-    //             // Update the image_path field
-    //             // Update the image_path field only if a new image is provided in the request
-    //             if ($request->has('book_id')) {
-    //                 $book = Book::findOrFail($request->input('book_id'));
-    //                 $book->cover()->save($cover);
-    //             } elseif ($request->has('libro_id')) {
-    //                 $libro = Libro::findOrFail($request->input('libro_id'));
-    //                 $libro->cover()->save($cover);
-    //             } elseif ($request->has('livre_id')) {
-    //                 $livre = Livre::findOrFail($request->input('livre_id'));
-    //                 $livre->cover()->save($cover);
-    //             } elseif ($request->has('buch_id')) {
-    //                 $buch = Buch::findOrFail($request->input('buch_id'));
-    //                 $buch->cover()->save($cover);
-    //             }
-    //             $extension = '.' . $request->file('image_path')->extension();
-    //             $title = $book->title ?? $libro->title ?? $livre->title ?? $buch->title;
-    //             if ($request->hasFile('image_path')) {
-
-    //                 $cover->image_path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $title . $extension, 'public');
-    //             }
-
-    //             $cover->save();
-
-    //             // $cover->image_path = $request->input('image_path');
-    //             // dd($request->input('image_path'));
-    //             // $cover->save();
-
-    //             return response()->json(['message' => 'Cover updated successfully'], Response::HTTP_OK);
-    //         }
-    //         return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
-    //     } catch (Exception $e) {
-    //         return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
-    // }
 }

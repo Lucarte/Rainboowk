@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class IllustratorController extends Controller
 {
-
     public function createIllustrator(Request $request)
     {
         try {

@@ -95,7 +95,7 @@ class BookController extends Controller
             if ($policyResp->allowed()) {
                 if ($book) {
                     $book->delete();
-                    return response()->json(['message' => 'Book deleted successfully'], Response::HTTP_OK);
+                    return response()->json(['message' => 'Book deleted successfully!'], Response::HTTP_OK);
                 } else {
                     return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
                 }
@@ -113,7 +113,7 @@ class BookController extends Controller
             $book = Book::where('title', $title)->first();
 
             if ($book) {
-                return response()->json(['book' => $book], Response::HTTP_NOT_FOUND);
+                return response()->json(['book' => $book], Response::HTTP_OK);
             }
 
             // Book not found, return an error response
@@ -162,11 +162,15 @@ class BookController extends Controller
                     return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
                 }
 
+                $book->ISBN = $request->input('ISBN');
+                $book->title = $request->input('title');
+                $book->description = $request->input('description');
+                $book->original_language = $request->input('original_language');
                 $book->title = $request->input('title');
 
                 $book->save();
 
-                return response()->json(['message' => $policyResp->message()], Response::HTTP_OK);
+                return response()->json((['message' => 'Book updated successfully!']), Response::HTTP_OK);
             }
 
             return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);

@@ -43,7 +43,7 @@ Route::get('/author/{slug}', [AuthorController::class, 'getByFullname'])->where(
 Route::get('/illustrator/{slug}', [IllustratorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
 
 // Get a specific publisher's info. + list of books published by them
-Route::get('/publisher/{slug}', [PublisherController::class, 'getByFullname'])->whereAlphaNumeric('name');
+Route::get('/publisher/{slug}', [PublisherController::class, 'getByName'])->whereAlphaNumeric('name');
 
 
 // Infos about the project will be displayed here
@@ -74,7 +74,6 @@ Route::prefix('auth')->group(function () {
             Route::delete('/libro/delete/{title}', 'delete');
         });
 
-        // Routes do not work
         Route::controller(BuchController::class)->group(function () {
             Route::post('/buch/create', 'create');
             Route::patch('/buch/update/{title}', 'update');
@@ -97,12 +96,6 @@ Route::prefix('auth')->group(function () {
             Route::post('/create_illustrator', 'createIllustrator');
             Route::patch('/update_illustrator/{slug}', 'updateIllustrator')->where('slug', '[A-Za-z_]+');
             Route::delete('/delete_illustrator/{slug}', 'deleteIllustrator')->where('slug', '[A-Za-z_]+');
-        });
-
-        Route::controller(PublisherController::class)->group(function () {
-            Route::post('/create_publisher', 'createPublisher');
-            Route::patch('/update_publisher/{name}', 'updatePublisher')->whereAlphaNumeric('name');;
-            Route::delete('/delete_publisher/{name}', 'deletePublisher')->whereAlphaNumeric('name');;
         });
 
         Route::controller(PublisherController::class)->group(function () {

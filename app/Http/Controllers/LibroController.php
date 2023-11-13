@@ -84,8 +84,6 @@ class LibroController extends Controller
         }
     }
 
-
-
     public function delete(string $title)
     {
         try {
@@ -114,15 +112,13 @@ class LibroController extends Controller
         }
     }
 
-
-
     public function getByTitle(string $title)
     {
         try {
             $libro = Libro::where('title', $title)->first();
 
             if ($libro) {
-                return response()->json(['libro' => $libro], Response::HTTP_NOT_FOUND);
+                return response()->json(['libro' => $libro], Response::HTTP_OK);
             }
 
             // Book not found, return an error response
@@ -149,7 +145,6 @@ class LibroController extends Controller
             return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function update(Request $request, string $title)
     {

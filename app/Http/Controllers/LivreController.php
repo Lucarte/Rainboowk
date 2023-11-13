@@ -84,8 +84,6 @@ class LivreController extends Controller
         }
     }
 
-
-
     public function delete(string $title)
     {
         try {
@@ -114,15 +112,13 @@ class LivreController extends Controller
         }
     }
 
-
-
     public function getByTitle(string $title)
     {
         try {
             $livre = Livre::where('title', $title)->first();
 
             if ($livre) {
-                return response()->json(['Livre' => $livre], Response::HTTP_NOT_FOUND);
+                return response()->json(['Livre' => $livre], Response::HTTP_OK);
             }
 
             // Book not found, return an error response
@@ -131,7 +127,6 @@ class LivreController extends Controller
             return response()->json(['message' => 'An error occurred'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function list()
     {

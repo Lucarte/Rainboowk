@@ -96,7 +96,7 @@ class PublisherController extends Controller
         }
     }
 
-    public function getByFullname($name)
+    public function getByName($name)
     {
         try {
             // Find the Publisher using the provided slug

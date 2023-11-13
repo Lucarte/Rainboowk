@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Http\Controllers\UserController;
 use App\Models\Author;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
