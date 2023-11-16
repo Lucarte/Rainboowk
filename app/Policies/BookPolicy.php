@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Http\Controllers\LoginController;
 use App\Models\User;
 use App\Models\Book;
 use Illuminate\Auth\Access\Response;

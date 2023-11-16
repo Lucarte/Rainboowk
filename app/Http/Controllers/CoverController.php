@@ -15,8 +15,10 @@ use Illuminate\Support\Facades\Gate;
 
 class CoverController extends Controller
 {
-    public function uploadCover(Request $request)
+    public function uploadCover(Request $request, Book $id)
     {
+        // Find the Cover by BOOK ID
+        $id = Book::findOrFail($id);
         try {
 
             // Check authorization using Gate policy
@@ -128,7 +130,6 @@ class CoverController extends Controller
 
                     // Update COver
                     $cover->update([
-                        // 'user_id' => $validatedData['user_id'],
                         'image_path' => $request->input('image_path')
                     ]);
 
@@ -136,7 +137,7 @@ class CoverController extends Controller
                     $extension = '.' . $request->file('image_path')->extension();
                     $title = $cover->book->title ?? $cover->libro->title ?? $cover->livre->title ?? $cover->buch->title;
                     $path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $title . $extension, 'public');
-
+                    dd($title, $path);
                     // Set cover path
                     $cover->image_path = $path;
                 }

@@ -17,41 +17,45 @@ class CoverPolicy
         return $user->isAdmin() ? true : null;
     }
 
-    private function canUserDeleteCover(User $user, Cover $cover)
-    {
-        $model = $this->getModelForCover($cover);
-
-        return $user->id === $model->user_id;
-    }
-
-    private function getModelForCover(Cover $cover)
-    {
-        $model = null;
-
-        if ($cover->book_id) {
-            $model = Book::findOrFail($cover->book_id);
-        } elseif ($cover->libro_id) {
-            $model = Libro::findOrFail($cover->libro_id);
-        } elseif ($cover->livre_id) {
-            $model = Livre::findOrFail($cover->livre_id);
-        } elseif ($cover->buch_id) {
-            $model = Buch::findOrFail($cover->buch_id);
-        }
-
-        return $model;
-    }
-
     public function deleteCover(User $user, Cover $cover)
     {
-        return $this->canUserDeleteCover($user, $cover)
-            ? Response::allow('CoverPolicy - delete - allowed')
-            : Response::deny('CoverPolicy - delete - denied');
+        return $user->id === $cover->user_id;
     }
 
     public function updateCover(User $user, Cover $cover)
     {
-        return $this->canUserDeleteCover($user, $cover)
-            ? Response::allow('CoverPolicy - update - allowed')
-            : Response::deny('CoverPolicy - update - denied');
+        return $user->id === $cover->user_id;
+    }
+
+    // public function uploadCover(User $user, Cover $cover)
+    // {
+    //     return $user->id === $cover->user_id;
+    // }
+
+    public function uploadCover($id, User $user, Cover $cover)
+    {
+        return $user->id === $cover->user_id;
+
+        $book = Book::find($id);
+        if ($book) {
+            return $book;
+        }
+
+        $libro = Libro::find($id);
+        if ($libro) {
+            return $libro;
+        }
+
+        $livre = Livre::find($id);
+        if ($livre) {
+            return $livre;
+        }
+
+        $buecher = Buch::find($id);
+        if ($buecher) {
+            return $buecher;
+        }
+
+        return null; // Item not found
     }
 }

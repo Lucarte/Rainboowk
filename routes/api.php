@@ -107,7 +107,7 @@ Route::prefix('auth')->group(function () {
         Route::controller(CoverController::class)->group(function () {
             Route::post('/upload_cover', 'uploadCover');
             Route::delete('/delete_cover/{id}', 'deleteCover')->whereNumber('id');
-            Route::patch('/update_cover/{id}', 'updateCover')->whereNumber('id');
+            Route::post('/update_cover/{id}', 'updateCover')->whereNumber('id');
         });
 
         // User possibilities: retrieve or update their info., or delete their profile
@@ -122,23 +122,6 @@ Route::prefix('auth')->group(function () {
         });
     });
 });
-
-
-// // Search by Book Name
-// Route::get('/search/{o_lan}/{title}', [SearchController::class, 'searchBooksByLanguageAndName']);
-
-// // Search by ISBN
-// Route::get('/search/{o_lan}/{isbn}', [SearchController::class, 'searchBooksByLanguageAndISBN']);
-
-// // Search by Author
-// Route::get('/search/{o_lan}/{fullname}', [SearchController::class, 'searchBooksByLanguageAndAuthor']);
-
-// // Search by Illustrator
-// Route::get('/search/{o_lan}/{fullname}', [SearchController::class, 'searchBooksByLanguageAndIllustrator']);
-
-// // Search by Publisher
-// Route::get('/search/{o_lan}/{name}', [SearchController::class, 'searchBooksByLanguageAndPublisher']);
-
 
 // 404
 Route::fallback(function () {
