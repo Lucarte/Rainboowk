@@ -22,7 +22,7 @@ class UserPolicy
 
     public function usersList(User $user)
     {
-        return $user->isAdmin() ? Response::allow('UserPolicy - usersList - allowed') : Response::deny('UserPolicy - delete - denied');
+        return $user->isAdmin() ? Response::allow('UserPolicy - usersList - allowed') : Response::deny('UserPolicy - usersList - denied');
     }
 
     public function delete(User $user, $username)
