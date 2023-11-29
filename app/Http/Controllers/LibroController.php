@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Libro;
 use App\Models\Publisher;
+use App\Models\Cover;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LibroController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request, CoverController $coverController)
     {
         try {
             $policyResp = Gate::inspect('create', Libro::class);
@@ -25,7 +26,8 @@ class LibroController extends Controller
                     'description' => 'required|string',
                     'print_date' => 'required|date',
                     'original_language' => 'required|string|max:255',
-                    'publisher_id' => 'required|exists:publishers,id', // New validation rule
+                    'publisher_id' => 'required|exists:publishers,id',
+                    'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // New validation rule for the image
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -77,10 +79,25 @@ class LibroController extends Controller
                     $libro->illustrators()->attach($request->input('illustrator_id'));
                 }
 
+                // Handle image upload and storage
+                if ($request->hasFile('image_path')) {
+                    $extension = '.' . $request->file('image_path')->extension();
+                    $title = $libro->title;
+                    $path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $title . $extension, 'public');
+
+                    // Save cover information to the Covers table
+                    $cover = new Cover();
+                    $cover->user_id = $user->id;
+                    $cover->libro_id = $libro->id; // Associate the cover with the newly created libro
+                    $cover->image_path = $path;
+                    $cover->save();
+                }
+
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
             }
         } catch (Exception $e) {
-            return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => '===FATAL=== '
+                . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 

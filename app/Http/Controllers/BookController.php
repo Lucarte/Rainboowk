@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Publisher;
+use App\Models\Cover;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,7 +26,8 @@ class BookController extends Controller
                     'description' => 'required|string',
                     'print_date' => 'required|date',
                     'original_language' => 'required|string|max:255',
-                    'publisher_id' => 'required|exists:publishers,id', // New validation rule
+                    'publisher_id' => 'required|exists:publishers,id',
+                    'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // New validation rule for the image
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -75,6 +77,20 @@ class BookController extends Controller
                 }
                 if ($request->has('illustrator_id')) {
                     $book->illustrators()->attach($request->input('illustrator_id'));
+                }
+
+                // Handle image upload and storage
+                if ($request->hasFile('image_path')) {
+                    $extension = '.' . $request->file('image_path')->extension();
+                    $title = $book->title;
+                    $path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $title . $extension, 'public');
+
+                    // Save cover information to the Covers table
+                    $cover = new Cover();
+                    $cover->user_id = $user->id;
+                    $cover->book_id = $book->id; // Associate the cover with the newly created book
+                    $cover->image_path = $path;
+                    $cover->save();
                 }
 
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
