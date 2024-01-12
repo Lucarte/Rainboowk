@@ -2,18 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
-use App\Models\User;
-use App\Rules\UniqueAuthorNameRule;
 use Exception;
+use App\Models\User;
+use App\Models\Author;
+use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Rules\UniqueAuthorNameRule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class AuthorController extends Controller
 {
+public function list()
+{
+    try {
+        $authors = Author::all();
+
+        return response()->json(['message' => 'AUTHORS LIST', 'Authors' => $authors], Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
 
     public function createAuthor(Request $request)
     {
@@ -144,9 +156,9 @@ class AuthorController extends Controller
             if (!$user) {
                 return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
             }
-
             // Convert the URL parameter with underscores to match the format in the 'fullname' column
             $formattedSlug = str_replace('_', ' ', $slug);
+                    
 
             // Find the author using the formatted slug
             $author = Author::where('fullname', $formattedSlug)->firstOrFail();

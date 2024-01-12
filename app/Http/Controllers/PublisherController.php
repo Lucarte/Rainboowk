@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Publisher;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Validator;
 
 class PublisherController extends Controller
 {
+    public function list()
+{
+    try {
+        $publishers = Publisher::all();
+
+        return response()->json(['message' => 'PUBLISHERS LIST', 'Publishers' => $publishers], Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
 
     public function createPublisher(Request $request)
     {
@@ -99,7 +109,7 @@ class PublisherController extends Controller
     public function getByName($name)
     {
         try {
-            // Find the Publisher using the provided slug
+            // Find the Publisher using the provided name
             $publisher = Publisher::where('name', $name)->first();
 
             if ($publisher) {

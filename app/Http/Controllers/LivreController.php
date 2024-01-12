@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\Cover;
 use App\Models\Livre;
 use App\Models\Publisher;
-use App\Models\Cover;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +14,17 @@ use Illuminate\Support\Facades\Validator;
 
 class LivreController extends Controller
 {
+    public function list()
+{
+    try {
+        $livres = Livre::all();
+
+        return response()->json(['message' => 'LIST DE LIVRES', 'Livres' => $livres], Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
     public function create(Request $request, CoverController $coverController)
     {
         try {
@@ -144,24 +155,6 @@ class LivreController extends Controller
             return response()->json(['message' => 'An error occurred'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    public function list()
-    {
-        try {
-            $policyResp = Gate::inspect('list', Livre::class);
-
-            if ($policyResp->allowed()) {
-                $livres = Livre::all();
-
-                return response()->json(['message' => $policyResp->message(), 'Livres' => $livres], Response::HTTP_OK);
-            }
-
-            return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
-        } catch (Exception $e) {
-            return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
     public function update(Request $request, string $title)
     {

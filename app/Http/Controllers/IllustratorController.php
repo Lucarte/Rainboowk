@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Illustrator;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use App\Models\Illustrator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Validator;
 
 class IllustratorController extends Controller
 {
+    public function list()
+{
+    try {
+        $illustrators = Illustrator::all();
+
+        return response()->json(['message' => 'ILLUSTRATORS LIST', 'Illustrators' => $illustrators], Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
     public function createIllustrator(Request $request)
     {
         try {

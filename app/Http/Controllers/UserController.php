@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -97,9 +97,9 @@ class UserController extends Controller
                         Password::min(8)->letters()->numbers()->mixedCase()->symbols()
                     ],
                     'password_confirmation' => ['required', 'min:8'],
-                    'locality' => ['required', Rule::in(['within_Germany', 'beyond_Germany'])],
-                    'personRole' => ['string', Rule::in(['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person'])],
-                    'publicity' => ['string', Rule::in(['other', 'mouthword', 'online_search'])],
+                    'locality' => ['required', Rule::in(['Within Germany', 'Beyond Germany'])],
+                    'personRole' => ['string', Rule::in(['Author', 'Child', 'Librarian', 'Opposed to the Biodiversity', 'Publisher Representative', 'Activist', 'Binary World Defender', 'Journalist', 'Curious Person'])],
+                    'publicity' => ['string', Rule::in(['Mouthword', 'Online Search', 'Other'])],
                     'terms' => ['required'],
                 ];
 

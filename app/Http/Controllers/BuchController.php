@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Buch;
-use App\Models\Publisher;
-use App\Models\Cover;
 use Exception;
+use App\Models\Buch;
+use App\Models\Cover;
+use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -140,22 +140,17 @@ class BuchController extends Controller
         }
     }
 
-    public function list()
-    {
-        try {
-            $policyResp = Gate::inspect('list', Buch::class);
+public function list()
+{
+    try {
+        $buecher = Buch::all();
 
-            if ($policyResp->allowed()) {
-                $buecher = Buch::all();
-
-                return response()->json(['message' => $policyResp->message(), 'buecher' => $buecher], Response::HTTP_OK);
-            }
-
-            return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
-        } catch (Exception $e) {
-            return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return response()->json(['message' => 'BUECHERLIST', 'Buecher' => $buecher], Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+}
+
 
     public function update(Request $request, string $title)
     {

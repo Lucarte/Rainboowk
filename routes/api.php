@@ -20,15 +20,18 @@ use Illuminate\Support\Facades\Route;
 //**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**
 //**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**
 //**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**
-//**//**//**//     MAKE A GETALL AS ENDPOINT ALONE     //**//**//**//**//**//**//**//**//**//**//
-//**//**//**//     LET HOMEPAGE GUIDE TO HOMEPORTAL    //**//**//**//**//**//**//**//**//**//**//
+//**//**//**//     MAKE A GETALL AS ENDPOINT ALONE     //**//**//**//**//**//**//**//**//**//***
+//**//**//**//     LET HOMEPAGE GUIDE TO HOMEPORTAL    //**//**//**//**//**//**//**//**//**//***
 //**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**
 //**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**
 //**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**
 
 
 // Show HOME (a list of the main-all-comprehensive catalog in all languages)
-Route::get('/', [HomeController::class, 'getAll']);
+Route::get('/', [HomeController::class, 'getHome']);
+
+// Show a list of the main-all-comprehensive catalog in all languages
+Route::get('/catalog', [HomeController::class, 'getAll']);
 
 // Get a specific book or a list of books
 Route::get('/books', [BookController::class, 'list']);
@@ -47,20 +50,22 @@ Route::get('/livres', [LivreController::class, 'list']);
 Route::get('/livre/{title}', [LivreController::class, 'getByTitle']);
 
 // Get a specific author's info. + list of books written by them
+Route::get('/authors', [AuthorController::class, 'list']);
 Route::get('/author/{slug}', [AuthorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
 
 // Get a specific illustrator's info. + list of books illustrated by them
+Route::get('/illustrators', [IllustratorController::class, 'list']);
 Route::get('/illustrator/{slug}', [IllustratorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
 
 // Get a specific publisher's info. + list of books published by them
-Route::get('/publisher/{slug}', [PublisherController::class, 'getByName'])->whereAlphaNumeric('name');
-
+Route::get('/publishers', [PublisherController::class, 'list']);
+Route::get('/publisher/{name}', [PublisherController::class, 'getByName'])->whereAlphaNumeric('name', '[A-Za-z]');
 
 // Infos about the project will be displayed here
 Route::get('/about', AboutController::class);;
 
 
-// All routes that deal with registration or login, or that need authetification will have the prefix 'auth'
+// All routes that deal with registration or login, or that need authentification will have the prefix 'auth'
 Route::prefix('auth')->group(function () {
     // get Routes
     Route::get('/register', [RegisterController::class, 'index']);

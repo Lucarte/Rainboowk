@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\Cover;
 use App\Models\Libro;
 use App\Models\Publisher;
-use App\Models\Cover;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -146,22 +146,17 @@ class LibroController extends Controller
     }
 
 
-    public function list()
-    {
-        try {
-            $policyResp = Gate::inspect('list', Libro::class);
+  public function list()
+{
+    try {
+        $libros = Libro::all();
 
-            if ($policyResp->allowed()) {
-                $libros = Libro::all();
-
-                return response()->json(['message' => $policyResp->message(), 'Libros' => $libros], Response::HTTP_OK);
-            }
-
-            return response()->json(['message' => $policyResp->message()], Response::HTTP_FORBIDDEN);
-        } catch (Exception $e) {
-            return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return response()->json(['message' => 'LISTA DE LIBROS', 'Libros' => $libros], Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+}
+
 
     public function update(Request $request, string $title)
     {

@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
@@ -15,6 +15,7 @@ class RegisterController extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
+            'salutation' => ['string', Rule::in(['Dear Individual', 'Dear Person', 'Dear Child', 'Mrs.', 'Mr.'])],
             'username' => [
                 'required',
                 'string',
@@ -30,13 +31,15 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'dob' => ['required'],
             'password' => [
-                'required', 'string', 'confirmed',
+                'required', 'string',
                 Password::min(8)->letters()->numbers()->mixedCase()->symbols()
             ],
-            'password_confirmation' => ['required', 'min:8'],
-            'locality' => ['required', Rule::in(['within_Germany', 'beyond_Germany'])],
-            'personRole' => ['string', Rule::in(['author', 'child', 'librarian', 'opposed_to_the_biodiversity', 'publisher_representative', 'activist', 'binary_world_defender', 'journalist', 'curious_person'])],
-            'publicity' => ['string', Rule::in(['other', 'mouthword', 'online_search'])],
+            'passwordConfirmation' => ['required', 'min:8', 'same:password'],
+
+            // 'passwordConfirmation' => ['required', 'min:8'],
+            'locality' => ['required', Rule::in(['Within Germany', 'Beyond Germany'])],
+            'personRole' => ['string', Rule::in(['Author', 'Child', 'Librarian', 'Opposed to the Biodiversity', 'Publisher Representative', 'Activist', 'Binary World Defender', 'Journalist', 'Curious Person'])],
+            'publicity' => ['string', Rule::in(['Mouthword', 'Online Search', 'Other'])],
             'terms' => ['required']
         ]);
 
