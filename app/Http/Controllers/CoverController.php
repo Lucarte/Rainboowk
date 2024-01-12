@@ -2,14 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cover;
 use Exception;
+use App\Models\Cover;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class CoverController extends Controller
 {
+public function getById($id)
+{
+    try {
+        // Fetch the cover by ID
+        $cover = Cover::find($id);
+
+        if (!$cover) {
+            return response()->json(['message' => 'Cover not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Construct the full path to the cover image in the storage directory
+        $imagePath = storage_path('app/public/' . $cover->image_path);
+
+        // Check if the file exists
+        if (!file_exists($imagePath)) {
+            return response()->json(['message' => 'Cover file not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Read the image file and return it
+        $imageData = file_get_contents($imagePath);
+
+        // Determine the content type based on the image file extension
+        $contentType = mime_content_type($imagePath);
+
+        return response($imageData)->header('Content-Type', $contentType);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
     public function deleteCover(int $id)
     {
         try {

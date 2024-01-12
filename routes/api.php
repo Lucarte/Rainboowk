@@ -33,6 +33,9 @@ Route::get('/', [HomeController::class, 'getHome']);
 // Show a list of the main-all-comprehensive catalog in all languages
 Route::get('/catalog', [HomeController::class, 'getAll']);
 
+//  Get a specific cover by id
+Route::get('/cover/{id}', [CoverController::class, 'getById']);
+
 // Get a specific book or a list of books
 Route::get('/books', [BookController::class, 'list']);
 Route::get('/book/{title}', [BookController::class, 'getByTitle']);

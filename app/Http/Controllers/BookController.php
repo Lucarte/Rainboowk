@@ -79,19 +79,23 @@ class BookController extends Controller
                     $book->illustrators()->attach($request->input('illustrator_id'));
                 }
 
-                // Handle image upload and storage
-                if ($request->hasFile('image_path')) {
-                    $extension = '.' . $request->file('image_path')->extension();
-                    $title = $book->title;
-                    $path = $request->file('image_path')->storeAs(env('COVERS_UPLOAD'), time() . '_' . $title . $extension, 'public');
+                
+      // Handle image upload and storage
+if ($request->hasFile('image_path')) {
+    $extension = '.' . $request->file('image_path')->extension();
+    $title = $book->title;
 
-                    // Save cover information to the Covers table
-                    $cover = new Cover();
-                    $cover->user_id = $user->id;
-                    $cover->book_id = $book->id; // Associate the cover with the newly created book
-                    $cover->image_path = $path;
-                    $cover->save();
-                }
+    // Specify the disk as 'public'
+    $path = $request->file('image_path')->storeAs('', time() . '_' . $title . $extension, 'public');
+
+    // Save cover information to the Covers table
+    $cover = new Cover();
+    $cover->user_id = $user->id;
+    $cover->book_id = $book->id;
+    $cover->image_path = $path;
+    $cover->save();
+}
+
 
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
             }
@@ -123,21 +127,32 @@ class BookController extends Controller
         }
     }
 
-    public function getByTitle(string $title)
-    {
-        try {
-            $book = Book::where('title', $title)->first();
+public function getByTitle(string $title)
+{
+    try {
+        $book = Book::where('title', $title)->first();
 
-            if ($book) {
-                return response()->json(['book' => $book], Response::HTTP_OK);
+        if ($book) {
+            // Load the cover relationship
+            $book->load('cover');
+
+            if ($book->cover) {
+                // If the book has a cover, return cover information
+                return response()->json(['book' => $book, 'cover' => $book->cover], Response::HTTP_OK);
             }
 
-            // Book not found, return an error response
-            return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            // If the book doesn't have a cover, you can still return the book information
+            return response()->json(['book' => $book, 'message' => 'Book does not have a cover'], Response::HTTP_OK);
         }
+
+        // Book not found, return an error response
+        return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'An error occurred'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+}
+
+
 
 public function list()
 {
