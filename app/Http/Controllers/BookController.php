@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
+      public function form()
+    {
+       
+        return response()->json(['message' => 'Fill out the book info!'], Response::HTTP_OK);
+    }
+
     public function create(Request $request)
     {
         try {
@@ -26,7 +32,6 @@ class BookController extends Controller
                     'description' => 'required|string',
                     'print_date' => 'required|date',
                     'original_language' => 'required|string|max:255',
-                    'publisher_id' => 'required|exists:publishers,id',
                     'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // New validation rule for the image
                 ];
 
@@ -80,21 +85,21 @@ class BookController extends Controller
                 }
 
                 
-      // Handle image upload and storage
-if ($request->hasFile('image_path')) {
-    $extension = '.' . $request->file('image_path')->extension();
-    $title = $book->title;
+                    // Handle image upload and storage
+                if ($request->hasFile('image_path')) {
+                    $extension = '.' . $request->file('image_path')->extension();
+                    $title = $book->title;
 
-    // Specify the disk as 'public'
-    $path = $request->file('image_path')->storeAs('', time() . '_' . $title . $extension, 'public');
+                    // Specify the disk as 'public'
+                    $path = $request->file('image_path')->storeAs('', time() . '_' . $title . $extension, 'public');
 
-    // Save cover information to the Covers table
-    $cover = new Cover();
-    $cover->user_id = $user->id;
-    $cover->book_id = $book->id;
-    $cover->image_path = $path;
-    $cover->save();
-}
+                    // Save cover information to the Covers table
+                    $cover = new Cover();
+                    $cover->user_id = $user->id;
+                    $cover->book_id = $book->id;
+                    $cover->image_path = $path;
+                    $cover->save();
+                }
 
 
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
@@ -133,16 +138,15 @@ public function getByTitle(string $title)
         $book = Book::where('title', $title)->first();
 
         if ($book) {
-            // Load the cover relationship
-            $book->load('cover');
+            // Load additional relationships
+            $book->load(['cover', 'authors', 'illustrators', 'publisher']);
 
-            if ($book->cover) {
-                // If the book has a cover, return cover information
-                return response()->json(['book' => $book, 'cover' => $book->cover], Response::HTTP_OK);
-            }
+            // Create the response directly using the loaded relationships
+            $response = [
+                'book' => $book,
+            ];
 
-            // If the book doesn't have a cover, you can still return the book information
-            return response()->json(['book' => $book, 'message' => 'Book does not have a cover'], Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_OK);
         }
 
         // Book not found, return an error response
@@ -151,8 +155,6 @@ public function getByTitle(string $title)
         return response()->json(['message' => 'An error occurred'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
-
-
 
 public function list()
 {

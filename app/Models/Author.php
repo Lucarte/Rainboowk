@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Author extends Model
 {
@@ -18,6 +18,16 @@ class Author extends Model
     public function libros()
     {
         return $this->hasMany(Libro::class, 'author_id', 'id');
+    }
+    
+    public function livres()
+    {
+        return $this->hasMany(Livre::class, 'author_id', 'id');
+    }
+
+    public function buecher()
+    {
+        return $this->hasMany(Buch::class, 'author_id', 'id');
     }
 
 

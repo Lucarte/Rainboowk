@@ -55,6 +55,7 @@ Route::get('/livre/{title}', [LivreController::class, 'getByTitle']);
 // Get a specific author's info. + list of books written by them
 Route::get('/authors', [AuthorController::class, 'list']);
 Route::get('/author/{slug}', [AuthorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
+Route::get('/auth/author_existance_check', [AuthorController::class, 'checkAuthor']);
 
 // Get a specific illustrator's info. + list of books illustrated by them
 Route::get('/illustrators', [IllustratorController::class, 'list']);
@@ -81,6 +82,7 @@ Route::prefix('auth')->group(function () {
         Route::post('/user/logout', LogoutController::class);
 
         Route::controller(BookController::class)->group(function () {
+            Route::get('/book/form', 'form');
             Route::post('/book/create', 'create');
             Route::patch('/book/update/{title}', 'update');
             Route::delete('/book/delete/{title}', 'delete');

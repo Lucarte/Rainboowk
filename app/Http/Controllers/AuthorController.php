@@ -15,6 +15,54 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthorController extends Controller
 {
+
+    public function checkAuthorExistence(Request $request)
+{
+    $firstName = $request->input('first_name');
+    $lastName = $request->input('last_name');
+
+    // Check if the author with the given first and last names exists in the database
+    $author = Author::where('first_name', $firstName)
+        ->where('last_name', $lastName)
+        ->first();
+
+    }
+    
+public function checkAuthor(Request $request)
+{
+    try {
+        // Validate request data
+        $rules = [
+            'first_name' => 'required|max:255|alpha',
+            'last_name' => 'required|max:255|alpha',
+        ];
+        
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+        
+        // Check if an author with the same first name and last name already exists
+        $existingAuthor = Author::where('first_name', $request->input('first_name'))
+            ->where('last_name', $request->input('last_name'))
+            ->first();
+        
+        $exists = $existingAuthor ? true : false;
+        $authorId = $exists ? $existingAuthor->id : null;
+
+        if ($existingAuthor) {
+            return response()->json(['exists' => $exists, 'authorId' => $authorId]);
+        } else {
+            return response()->json(['message' => 'No author found'], Response::HTTP_NOT_FOUND);
+        }
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
 public function list()
 {
     try {
