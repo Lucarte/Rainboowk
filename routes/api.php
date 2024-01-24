@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Publisher;
+use App\Models\Illustrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -55,15 +57,17 @@ Route::get('/livre/{title}', [LivreController::class, 'getByTitle']);
 // Get a specific author's info. + list of books written by them
 Route::get('/authors', [AuthorController::class, 'list']);
 Route::get('/author/{slug}', [AuthorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
-Route::get('/auth/author_existance_check', [AuthorController::class, 'checkAuthor']);
+Route::get('/auth/author_existence_check', [AuthorController::class, 'checkAuthor']);
 
 // Get a specific illustrator's info. + list of books illustrated by them
 Route::get('/illustrators', [IllustratorController::class, 'list']);
 Route::get('/illustrator/{slug}', [IllustratorController::class, 'getByFullname'])->where('slug', '[A-Za-z_]+');
+Route::get('/auth/illustrator_existence_check', [IllustratorController::class, 'checkIllustrator']);
 
 // Get a specific publisher's info. + list of books published by them
 Route::get('/publishers', [PublisherController::class, 'list']);
 Route::get('/publisher/{name}', [PublisherController::class, 'getByName'])->whereAlphaNumeric('name', '[A-Za-z]');
+Route::get('/auth/publisher_existence_check', [PublisherController::class, 'checkPublisher']);
 
 // Infos about the project will be displayed here
 Route::get('/about', AboutController::class);;
@@ -135,9 +139,9 @@ Route::prefix('auth')->group(function () {
             Route::get('/users', 'usersList');
 
             // Routes for all but only 'admin' or owner can make changes
-            Route::get('/user/{username}', 'getByUsername')->whereAlphaNumeric('username');
-            Route::patch('/user/{username}', 'update')->whereAlphaNumeric('username');
-            Route::delete('/user/{username}', 'delete')->whereAlphaNumeric('username');
+            Route::get('/profile/{username}', 'getByUsername')->whereAlphaNumeric('username');
+            Route::patch('/update_profile/{username}', 'update')->whereAlphaNumeric('username');
+            Route::delete('/delete_profile/{username}', 'delete')->whereAlphaNumeric('username');
         });
     });
 });

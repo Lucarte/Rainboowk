@@ -61,17 +61,10 @@ class BookController extends Controller
                 $book->description = $request->input('description');
                 $book->original_language = $request->input('original_language');
 
-                // Find and set the publisher based on the provided 'publisher_id'
-                $publisher = Publisher::find($request->input('publisher_id'));
-                if (!$publisher) {
-                    return response()->json(['message' => 'Publisher not found'], Response::HTTP_NOT_FOUND);
-                }
-
-                $book->publisher()->associate($publisher);
-
                 $book->print_date = $request->input('print_date');
                 $book->author_id = $request->input('author_id');
                 $book->illustrator_id = $request->input('illustrator_id');
+                $book->publisher_id = $request->input('publisher_id');
 
                 // Save the book
                 $book->save();
@@ -83,25 +76,30 @@ class BookController extends Controller
                 if ($request->has('illustrator_id')) {
                     $book->illustrators()->attach($request->input('illustrator_id'));
                 }
-
-                
-                    // Handle image upload and storage
-                if ($request->hasFile('image_path')) {
-                    $extension = '.' . $request->file('image_path')->extension();
-                    $title = $book->title;
-
-                    // Specify the disk as 'public'
-                    $path = $request->file('image_path')->storeAs('', time() . '_' . $title . $extension, 'public');
-
-                    // Save cover information to the Covers table
-                    $cover = new Cover();
-                    $cover->user_id = $user->id;
-                    $cover->book_id = $book->id;
-                    $cover->image_path = $path;
-                    $cover->save();
+                if ($request->has('publisher_id')) {
+                    $book->publisher()->associate($request->input('publisher_id'));
                 }
 
+            // Handle image upload and storage
+            if ($request->hasFile('image_path')) {
+                $extension = '.' . $request->file('image_path')->extension();
+                $title = $book->title;
 
+                // Specify the disk as 'public'
+                $path = $request->file('image_path')->storeAs('', time() . '_' . $title . $extension, 'public');
+
+                info('Cover path: ' . $path);  // Add this debug statement
+
+                // Save cover information to the Covers table
+                $cover = new Cover();
+                $cover->user_id = $user->id;
+                $cover->book_id = $book->id;
+                $cover->image_path = $path;
+                $cover->save();
+            } else {
+                info('No cover file provided');  // Add this debug statement
+            }
+            info('After cover handling');  // Add this debug statement
                 return response()->json(['message' => $policyResp->message()], Response::HTTP_CREATED);
             }
         } catch (Exception $e) {

@@ -82,14 +82,12 @@ class UserController extends Controller
                                 $fail('Username cannot contain white spaces');
                             };
                         },
-                        'unique:users'
                     ],
                     'email' => [
                         'required',
                         'string',
                         'email',
                         'max:255',
-                        Rule::unique('users')->ignore($user->id)
                     ],
                     'dob' => ['required'],
                     'password' => [

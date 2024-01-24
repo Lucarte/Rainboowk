@@ -13,6 +13,52 @@ use Illuminate\Support\Facades\Validator;
 
 class IllustratorController extends Controller
 {
+    
+        public function checkIllustratorExistence(Request $request)
+{
+    $firstName = $request->input('first_name');
+    $lastName = $request->input('last_name');
+
+    // Check if the illustrator with the given first and last names exists in the database
+    $illustrator = Illustrator::where('first_name', $firstName)
+        ->where('last_name', $lastName)
+        ->first();
+
+    }
+
+    public function checkIllustrator(Request $request)
+{
+    try {
+        // Validate request data
+        $rules = [
+            'first_name' => 'required|max:255|alpha',
+            'last_name' => 'required|max:255|alpha',
+        ];
+        
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+        
+        // Check if an illustrator with the same first name and last name already exists
+        $existingIllustrator = Illustrator::where('first_name', $request->input('first_name'))
+            ->where('last_name', $request->input('last_name'))
+            ->first();
+        
+        $exists = $existingIllustrator ? true : false;
+        $illustratorId = $exists ? $existingIllustrator->id : null;
+
+        if ($existingIllustrator) {
+            return response()->json(['exists' => $exists, 'illustratorId' => $illustratorId]);
+        } else {
+            return response()->json(['message' => 'No illustrator found'], Response::HTTP_NOT_FOUND);
+        }
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
     public function list()
 {
     try {
@@ -38,7 +84,7 @@ class IllustratorController extends Controller
                     'date_of_death' => 'date|nullable',
                     'biography' => 'nullable',
                     'nationality' => 'max:255|nullable',
-                    'contact_email' => 'email|max:255|nullable|unique:authors',
+                    'contact_email' => 'email|max:255|nullable|unique:illustrators',
                     'website' => 'max:255|nullable',
                     'awards_and_honors' => 'nullable'
                 ];
@@ -170,7 +216,7 @@ class IllustratorController extends Controller
                     'date_of_death' => 'date|nullable',
                     'biography' => 'nullable',
                     'nationality' => 'max:255|nullable',
-                    'contact_email' => 'email|max:255|nullable|unique:authors',
+                    'contact_email' => 'email|max:255|nullable|unique:illustrators',
                     'website' => 'max:255|nullable',
                     'awards_and_honors' => 'nullable'
                 ];

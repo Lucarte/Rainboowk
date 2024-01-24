@@ -13,6 +13,49 @@ use Illuminate\Support\Facades\Validator;
 
 class PublisherController extends Controller
 {
+
+        public function checkPublisherExistence(Request $request)
+{
+    $firstName = $request->input('name');
+
+    // Check if the publisher with the given first and last names exists in the database
+    $publisher = Publisher::where('name', $firstName)
+        ->first();
+
+    }
+    
+public function checkPublisher(Request $request)
+{
+    try {
+        // Validate request data
+        $rules = [
+            'name' => 'required|max:255|alpha'
+        ];
+        
+        $validator = Validator::make($request->all(), $rules);
+        
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+        
+        // Check if an publisher with the same first name and last name already exists
+        $existingPublisher = Publisher::where('name', $request->input('name'))
+            ->first();
+        
+        $exists = $existingPublisher ? true : false;
+        $publisherId = $exists ? $existingPublisher->id : null;
+
+        if ($existingPublisher) {
+            return response()->json(['exists' => $exists, 'publisherId' => $publisherId]);
+        } else {
+            return response()->json(['message' => 'No publisher found'], Response::HTTP_NOT_FOUND);
+        }
+    } catch (Exception $e) {
+        return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
+
     public function list()
 {
     try {
