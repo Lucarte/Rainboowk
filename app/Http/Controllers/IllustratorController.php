@@ -52,7 +52,7 @@ class IllustratorController extends Controller
         if ($existingIllustrator) {
             return response()->json(['exists' => $exists, 'illustratorId' => $illustratorId]);
         } else {
-            return response()->json(['message' => 'No illustrator found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => 'No illustrator found'], Response::HTTP_ACCEPTED);
         }
     } catch (Exception $e) {
         return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

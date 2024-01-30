@@ -48,7 +48,7 @@ public function checkPublisher(Request $request)
         if ($existingPublisher) {
             return response()->json(['exists' => $exists, 'publisherId' => $publisherId]);
         } else {
-            return response()->json(['message' => 'No publisher found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => 'No publisher found'], Response::HTTP_ACCEPTED);
         }
     } catch (Exception $e) {
         return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

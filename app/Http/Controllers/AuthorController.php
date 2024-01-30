@@ -54,14 +54,12 @@ public function checkAuthor(Request $request)
         if ($existingAuthor) {
             return response()->json(['exists' => $exists, 'authorId' => $authorId]);
         } else {
-            return response()->json(['message' => 'No author found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => 'No author found'], Response::HTTP_ACCEPTED);
         }
     } catch (Exception $e) {
         return response()->json(['message' => '===FATAL=== ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
-
-
 
 public function list()
 {
